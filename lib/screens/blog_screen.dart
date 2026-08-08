@@ -22,16 +22,19 @@ class BlogScreen extends StatelessWidget {
 
   static final List<BlogPost> posts = [
     BlogPost(
-      title: 'Joining the Lufkin/Angelina County Chamber of Commerce',
-      date: 'Feb 15, 2026',
-      excerpt: 'RBM Business Holdings Inc. is proud to announce our official membership and investment in the East Texas business community...',
-      category: 'Company News',
+      title: 'Streamlining IT Procurement & Vendor Management',
+      date: 'Feb 12, 2026',
+      excerpt: 'How RBM\'s direct partnerships with equipment vendors save time and reduce costs for our clients...',
+      category: 'IT Consulting',
       content: '''
-RBM Business Holdings Inc. is officially expanding its community footprint! In February 2026, we were honored to be welcomed as a new investor and member of the Lufkin/Angelina County Chamber of Commerce.
+Managing the lifecycle of hardware and software can be a significant burden for growing businesses. At RBM Business Holdings, we simplify this through our integrated Vendor Management System.
 
-CEO Scott Mowry attended the welcome ceremony, emphasizing our commitment to fostering growth within the regional business ecosystem. As a firm specializing in financial and IT consulting, we look forward to providing strategic value to our fellow Chamber members.
+Our approach includes:
+- Strategic Partnerships: Direct access to top-tier equipment and software vendors.
+- End-to-End Procurement: We handle everything from vendor selection to final purchase and deployment.
+- Cost Efficiency: Leveraging our professional network to ensure your business gets the best value and support.
 
-"Community and collaboration are at the heart of what we do," says Mowry. "We are excited to help local businesses modernize their infrastructure and optimize their financial health."
+Don't let logistics slow down your technical growth. Our vendor system is designed to keep your infrastructure modern and your operations smooth.
       ''',
     ),
     BlogPost(
