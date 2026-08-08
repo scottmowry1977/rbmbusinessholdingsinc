@@ -1,10 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class OnboardingScreen extends StatelessWidget {
+class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
-  final String portalUrl = 'https://rbmbusinessholdingsinc.com/portal'; // Replace with actual portal URL
+  @override
+  State<OnboardingScreen> createState() => _OnboardingScreenState();
+}
+
+class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  final String portalUrl = 'https://rbmbusinessholdingsinc.com/portal';
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   Future<void> _launchURL(String urlString) async {
     final Uri url = Uri.parse(urlString);
@@ -30,87 +48,180 @@ class OnboardingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Client Onboarding')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Your Roadmap to Success',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Follow these steps to initialize your professional partnership with RBM Business Holdings.',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 30),
-            
-            _buildRoadmapStep(
-              context,
-              1,
-              'Contract Execution',
-              'Review and sign the professional services agreement sent to your email.',
-              Icons.assignment_turned_in,
-              true,
-            ),
-            _buildRoadmapStep(
-              context,
-              2,
-              'Professional Intake',
-              'Complete our detailed intake form on a desktop computer for maximum accuracy.',
-              Icons.computer,
-              false,
-            ),
-            _buildRoadmapStep(
-              context,
-              3,
-              'System Initialization',
-              'Grant secure access to required financial or IT infrastructure systems.',
-              Icons.vpn_key,
-              false,
-            ),
-
-            const SizedBox(height: 40),
-            const Divider(),
-            const SizedBox(height: 20),
-            
-            const Text(
-              'Desktop Handoff',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            const Text(
-              'Our intake forms are comprehensive. We recommend completing them on a laptop or desktop.',
-              style: TextStyle(fontSize: 15),
-            ),
-            const SizedBox(height: 20),
-            
-            ElevatedButton.icon(
-              onPressed: _sendLinkToSelf,
-              icon: const Icon(Icons.email_outlined),
-              label: const Text('Email Link to My Computer'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-              ),
-            ),
-            const SizedBox(height: 12),
-            OutlinedButton.icon(
-              onPressed: () => _launchURL(portalUrl),
-              icon: const Icon(Icons.open_in_browser),
-              label: const Text('Open Web Portal Now'),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-              ),
-            ),
-
-            const SizedBox(height: 40),
-            _buildPreparationSection(context),
-            const SizedBox(height: 40),
+      appBar: AppBar(
+        title: const Text('Client Onboarding'),
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white.withOpacity(0.6),
+          indicatorColor: Theme.of(context).colorScheme.secondary,
+          tabs: const [
+            Tab(text: 'General & IT', icon: Icon(Icons.business_center)),
+            Tab(text: 'Tax Clients', icon: Icon(Icons.calculate)),
           ],
         ),
       ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _buildGeneralOnboarding(context),
+          _buildTaxOnboarding(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGeneralOnboarding(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Your Roadmap to Success',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Follow these steps to initialize your professional partnership with RBM Business Holdings.',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 30),
+          _buildRoadmapStep(
+            context,
+            1,
+            'Contract Execution',
+            'Review and sign the professional services agreement sent to your email.',
+            Icons.assignment_turned_in,
+            true,
+          ),
+          _buildRoadmapStep(
+            context,
+            2,
+            'Professional Intake',
+            'Complete our detailed intake form on a desktop computer for maximum accuracy.',
+            Icons.computer,
+            false,
+          ),
+          _buildRoadmapStep(
+            context,
+            3,
+            'System Initialization',
+            'Grant secure access to required financial or IT infrastructure systems.',
+            Icons.vpn_key,
+            false,
+          ),
+          _buildDesktopHandoff(context),
+          const SizedBox(height: 40),
+          _buildPreparationSection(
+            context,
+            'General Preparation Guide',
+            [
+              'Federal Tax ID (EIN)',
+              '3 Months of Bank Statements',
+              'Primary Admin Access to IT Systems',
+              'Point of Contact for Daily Operations',
+            ],
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTaxOnboarding(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Tax Client Roadmap',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Streamlined onboarding for individual and corporate tax planning clients.',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 30),
+          _buildRoadmapStep(
+            context,
+            1,
+            'Document Collection',
+            'Gather prior year returns and current year income/expense records.',
+            Icons.folder_shared,
+            true,
+          ),
+          _buildRoadmapStep(
+            context,
+            2,
+            'Tax Intake Session',
+            'Complete the specialized tax intake form via our secure web portal.',
+            Icons.description,
+            false,
+          ),
+          _buildRoadmapStep(
+            context,
+            3,
+            'Advisory Session',
+            'Schedule your initial tax strategy meeting with our consultants.',
+            Icons.event_available,
+            false,
+          ),
+          _buildDesktopHandoff(context),
+          const SizedBox(height: 40),
+          _buildPreparationSection(
+            context,
+            'Tax Preparation Guide',
+            [
+              'Prior 2 Years of Tax Returns',
+              'All W2, 1099, and K-1 Documents',
+              'Business Expense Logs & Receipt Summaries',
+              'Investment & Real Estate Records',
+            ],
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDesktopHandoff(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 40),
+        const Divider(),
+        const SizedBox(height: 20),
+        const Text(
+          'Desktop Handoff',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 12),
+        const Text(
+          'Our intake forms are comprehensive. We recommend completing them on a laptop or desktop.',
+          style: TextStyle(fontSize: 15),
+        ),
+        const SizedBox(height: 20),
+        ElevatedButton.icon(
+          onPressed: _sendLinkToSelf,
+          icon: const Icon(Icons.email_outlined),
+          label: const Text('Email Link to My Computer'),
+          style: ElevatedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 50),
+          ),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          onPressed: () => _launchURL(portalUrl),
+          icon: const Icon(Icons.open_in_browser),
+          label: const Text('Open Web Portal Now'),
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(double.infinity, 50),
+          ),
+        ),
+      ],
     );
   }
 
@@ -164,7 +275,7 @@ class OnboardingScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPreparationSection(BuildContext context) {
+  Widget _buildPreparationSection(BuildContext context, String title, List<String> items) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -179,16 +290,13 @@ class OnboardingScreen extends StatelessWidget {
             children: [
               Icon(Icons.lightbulb, color: Theme.of(context).colorScheme.secondary),
               const SizedBox(width: 8),
-              const Text('Preparation Guide', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 12),
           const Text('Have these items ready before starting intake:', style: TextStyle(fontSize: 14)),
           const SizedBox(height: 12),
-          _buildBulletPoint('Federal Tax ID (EIN)'),
-          _buildBulletPoint('3 Months of Bank Statements'),
-          _buildBulletPoint('Primary Admin Access to IT Systems'),
-          _buildBulletPoint('Point of Contact for Daily Operations'),
+          ...items.map((item) => _buildBulletPoint(item)).toList(),
         ],
       ),
     );
