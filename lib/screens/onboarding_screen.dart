@@ -15,7 +15,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -52,12 +52,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         title: const Text('Client Onboarding'),
         bottom: TabBar(
           controller: _tabController,
+          isScrollable: true,
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white.withOpacity(0.6),
           indicatorColor: Theme.of(context).colorScheme.secondary,
           tabs: const [
             Tab(text: 'General & IT', icon: Icon(Icons.business_center)),
             Tab(text: 'Tax Clients', icon: Icon(Icons.calculate)),
+            Tab(text: 'Accounting', icon: Icon(Icons.account_balance)),
+            Tab(text: 'Business Consulting', icon: Icon(Icons.trending_up)),
           ],
         ),
       ),
@@ -66,6 +69,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         children: [
           _buildGeneralOnboarding(context),
           _buildTaxOnboarding(context),
+          _buildAccountingOnboarding(context),
+          _buildBusinessOnboarding(context),
         ],
       ),
     );
@@ -179,6 +184,122 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               'All W2, 1099, and K-1 Documents',
               'Business Expense Logs & Receipt Summaries',
               'Investment & Real Estate Records',
+            ],
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAccountingOnboarding(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Accounting Client Roadmap',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Transitioning your daily financial operations to RBM management.',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 30),
+          _buildRoadmapStep(
+            context,
+            1,
+            'Software Integration',
+            'Connect your QuickBooks, Xero, or legacy ERP systems to our secure cloud.',
+            Icons.sync,
+            true,
+          ),
+          _buildRoadmapStep(
+            context,
+            2,
+            'Historical Review',
+            'Our team audits the last 6-12 months of records to ensure a clean starting point.',
+            Icons.fact_check,
+            false,
+          ),
+          _buildRoadmapStep(
+            context,
+            3,
+            'Reporting Cycle Setup',
+            'Establish your monthly and quarterly reporting deadlines and KPI dashboards.',
+            Icons.published_with_changes,
+            false,
+          ),
+          _buildDesktopHandoff(context),
+          const SizedBox(height: 40),
+          _buildPreparationSection(
+            context,
+            'Accounting Preparation Guide',
+            [
+              'Admin access to current accounting software',
+              'Current Trial Balance and General Ledger',
+              'Full Vendor and Customer lists',
+              'Open Accounts Payable/Receivable reports',
+            ],
+          ),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBusinessOnboarding(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Strategic Consulting Roadmap',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          const Text(
+            'Laying the foundation for your business growth and operational efficiency.',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 30),
+          _buildRoadmapStep(
+            context,
+            1,
+            'Discovery Phase',
+            'In-depth interviews with key stakeholders to identify core pain points.',
+            Icons.search,
+            true,
+          ),
+          _buildRoadmapStep(
+            context,
+            2,
+            'Operational Audit',
+            'A comprehensive review of your current workflows and organizational structure.',
+            Icons.analytics,
+            false,
+          ),
+          _buildRoadmapStep(
+            context,
+            3,
+            'Strategic Kickoff',
+            'The formal presentation of your 12-month growth roadmap and key objectives.',
+            Icons.rocket,
+            false,
+          ),
+          _buildDesktopHandoff(context),
+          const SizedBox(height: 40),
+          _buildPreparationSection(
+            context,
+            'Consulting Preparation Guide',
+            [
+              'Current Organizational Chart',
+              'Documentation of existing core processes',
+              'List of top 3 operational challenges',
+              'Access to historical performance data',
             ],
           ),
           const SizedBox(height: 40),
