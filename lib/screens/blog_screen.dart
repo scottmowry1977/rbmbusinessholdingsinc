@@ -22,51 +22,80 @@ class BlogScreen extends StatelessWidget {
 
   static final List<BlogPost> posts = [
     BlogPost(
-      title: 'The Future of Content Creator Tax Strategy',
-      date: 'Aug 5, 2026',
-      excerpt: 'How influencers can optimize their financial health in the evolving digital economy...',
+      title: 'Joining the Lufkin/Angelina County Chamber of Commerce',
+      date: 'Feb 15, 2026',
+      excerpt: 'RBM Business Holdings Inc. is proud to announce our official membership and investment in the East Texas business community...',
+      category: 'Company News',
+      content: '''
+RBM Business Holdings Inc. is officially expanding its community footprint! In February 2026, we were honored to be welcomed as a new investor and member of the Lufkin/Angelina County Chamber of Commerce.
+
+CEO Scott Mowry attended the welcome ceremony, emphasizing our commitment to fostering growth within the regional business ecosystem. As a firm specializing in financial and IT consulting, we look forward to providing strategic value to our fellow Chamber members.
+
+"Community and collaboration are at the heart of what we do," says Mowry. "We are excited to help local businesses modernize their infrastructure and optimize their financial health."
+      ''',
+    ),
+    BlogPost(
+      title: 'Tax Strategy for the Modern Content Creator',
+      date: 'Feb 2, 2026',
+      excerpt: 'How influencers and digital entrepreneurs can retain more income through specialized financial planning...',
       category: 'Finance',
       content: '''
-As the digital economy continues to mature, content creators are facing increasingly complex financial landscapes. At RBM Business Holdings Inc., we've seen a shift in how influencers manage their revenue streams.
+The creator economy is booming, but many digital entrepreneurs are leaving money on the table due to outdated tax strategies. 
 
-Key takeaways for 2026:
-1. Entity Structuring: Why an LLC might not be enough anymore.
-2. Global Revenue: Handling international sponsorships and tax treaties.
-3. Investment Diversification: Moving beyond brand deals into tangible assets.
+At RBM Business Holdings, we specialize in helping content creators navigate:
+- Multi-state and international income streams.
+- Strategic entity structuring (beyond the basic LLC).
+- Maximizing deductions for equipment, travel, and production costs.
 
-Strategic planning is no longer optional—it is the foundation of long-term creator success.
+Professional financial planning is the difference between a "hobby" and a sustainable media business.
       ''',
     ),
     BlogPost(
-      title: 'Modernizing IT for Corporate Acquisitions',
-      date: 'July 28, 2026',
-      excerpt: 'A deep dive into the technical challenges of M&A integration and infrastructure standardizing...',
+      title: 'The Future of Corporate IT & M&A Integration',
+      date: 'Jan 15, 2026',
+      excerpt: 'Successful mergers and acquisitions require more than just financial alignment—they require technical synergy...',
       category: 'IT Consulting',
       content: '''
-Mergers and acquisitions often fail not because of financial misalignment, but because of technical friction. Integrating two disparate IT ecosystems requires a surgical approach.
+Mergers and acquisitions often face significant "technical friction" during the integration phase. 
 
-Our integration framework focuses on:
-- Azure AD Consolidation: Creating a unified identity for all employees.
-- ERP Migration: Transitioning legacy systems to JD Edwards.
-- Policy Alignment: Establishing security protocols that work for the combined entity.
+Our M&A framework focuses on:
+- Azure AD Consolidation: Creating a unified identity for the new combined workforce.
+- ERP Alignment: Transitioning disparate systems into a unified platform like JD Edwards.
+- Data Security: Ensuring no vulnerabilities are introduced during the network merger.
 
-A successful integration starts with a clear technical roadmap.
+A clear technical roadmap is essential for preserving value during corporate transitions.
       ''',
     ),
     BlogPost(
-      title: 'Risk Management in a Volatile Market',
-      date: 'July 20, 2026',
-      excerpt: 'Identifying potential business risks and ensuring compliance in changing industries...',
-      category: 'Business',
+      title: 'Infrastructure Modernization: The Shift to Cloud',
+      date: 'Dec 10, 2025',
+      excerpt: 'Why traditional businesses are accelerating their datacenter migrations to Azure and VMWare cloud solutions...',
+      category: 'IT Consulting',
       content: '''
-In today's fast-paced market, risk management is about more than just insurance. It's about being proactive.
+Datacenter maintenance is becoming a liability for growth-oriented firms. 
 
-We work with businesses to:
-- Identify operational risks before they become issues.
-- Ensure compliance with shifting federal and local regulations.
-- Develop business continuity plans that keep the doors open.
+We are seeing an acceleration in:
+- Legacy Server Migration: Moving ESXi hosts to scalable cloud environments.
+- VDI Implementation: Supporting a remote-first workforce with high-performance virtual desktops.
+- Automated Patching: Reducing security risks through environment-wide management systems.
 
-Resilience is built through preparation.
+Modernizing your infrastructure isn't just about efficiency—it's about resilience.
+      ''',
+    ),
+    BlogPost(
+      title: 'Resilience and Growth: A Founder\'s Journey',
+      date: 'Nov 20, 2025',
+      excerpt: 'CEO Scott Mowry reflects on the intersection of personal health, professional accountability, and business leadership...',
+      category: 'Leadership',
+      content: '''
+Leadership is as much about personal discipline as it is about professional strategy. 
+
+Drawing from his journey as a returning bodybuilder and heart surgery survivor, Scott Mowry shares insights on:
+- Accountability: Bringing the same rigor to the boardroom as the weight room.
+- Resilience: Navigating professional setbacks with the same mindset as health recovery.
+- Vision: Building a company that stands the test of time by focusing on core values.
+
+At RBM, we believe that a strong business is built on a foundation of strong principles.
       ''',
     ),
   ];
