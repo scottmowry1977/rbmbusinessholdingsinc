@@ -125,7 +125,7 @@ Resilience is built through preparation.
                     const SizedBox(height: 12),
                     Text(
                       post.excerpt,
-                      style: const TextStyle(fontSize: 15, color: Colors.black87),
+                      style: const TextStyle(fontSize: 15),
                     ),
                     const SizedBox(height: 12),
                     Row(

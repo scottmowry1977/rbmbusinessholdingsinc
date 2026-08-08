@@ -87,11 +87,12 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildHeroSection(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor,
+        color: isDark ? const Color(0xFF151945) : Theme.of(context).primaryColor,
         border: Border(
           bottom: BorderSide(
             color: Theme.of(context).colorScheme.secondary, // Gold Trim

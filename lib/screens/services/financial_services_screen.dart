@@ -83,7 +83,7 @@ class FinancialServicesScreen extends StatelessWidget {
                 const SizedBox(height: 6),
                 Text(
                   description,
-                  style: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.4),
+                  style: const TextStyle(fontSize: 15, height: 1.4),
                 ),
               ],
             ),

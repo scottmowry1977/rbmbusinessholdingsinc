@@ -40,6 +40,29 @@ class RBMBusinessApp extends StatelessWidget {
           ),
         ),
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          brightness: Brightness.dark,
+          seedColor: const Color(0xFF1A237E),
+          primary: const Color(0xFF1A237E),
+          secondary: const Color(0xFFC5A059),
+        ),
+        scaffoldBackgroundColor: const Color(0xFF0A0E2E), // Midnight Navy
+        useMaterial3: true,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF0A0E2E),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          shape: Border(
+            bottom: BorderSide(
+              color: Color(0xFFC5A059), // Gold Trim
+              width: 2,
+            ),
+          ),
+        ),
+      ),
+      themeMode: ThemeMode.system, // Automatically switch based on device settings
       initialRoute: '/splash',
       routes: {
         '/splash': (context) => const SplashScreen(),
