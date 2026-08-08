@@ -10,7 +10,7 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final String portalUrl = 'https://rbmbusinessholdingsinc.com/portal';
+  final String portalUrl = 'https://rbmbusinessholdingsinc.com/client-forms';
 
   @override
   void initState() {
