@@ -1,0 +1,65 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+.vscode/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configurations and extensions settings creating a consistent development environment.
+# It is recommended to check this into the version control system.
+# .vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+
+# Android related
+**/android/**/generated/
+**/android/gen/
+**/android/out/
+**/android/local.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+.gradle/
+build/
+captures/
+local.properties
+
+# Web related
+lib/generated_plugin_registrant.dart
+
+# Windows related
+**/windows/flutter/ephemeral/
+**/windows/flutter/generated/
+build/windows/
+CMakeSettings.json
+
+# Linux related
+build/linux/
+
+# macOS related
+build/macos/
+
+# Symbolica links
+.entitlements
+
+# Artifacts directory (internal to this environment)
+.artifacts/
