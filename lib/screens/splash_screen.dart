@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1A237E), // Navy Blue
+      backgroundColor: const Color(0xFF0C2340), // Notre Dame Navy
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
               width: 150,
               height: 150,
               decoration: BoxDecoration(
-                border: Border.all(color: const Color(0xFFC5A059), width: 2), // Gold trim
+                border: Border.all(color: const Color(0xFFC99700), width: 2), // Notre Dame Gold
                 borderRadius: BorderRadius.circular(20),
               ),
               child: ClipRRect(
@@ -46,7 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
                       child: Text(
                         'RBM',
                         style: TextStyle(
-                          color: Color(0xFFC5A059),
+                          color: Color(0xFFC99700),
                           fontSize: 40,
                           fontWeight: FontWeight.bold,
                         ),
@@ -68,7 +68,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             const SizedBox(height: 10),
             const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC5A059)),
+              valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFC99700)),
             ),
           ],
         ),

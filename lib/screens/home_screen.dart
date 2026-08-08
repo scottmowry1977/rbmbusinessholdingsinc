@@ -92,7 +92,7 @@ class HomeScreen extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF151945) : Theme.of(context).primaryColor,
+        color: isDark ? const Color(0xFF071426) : Theme.of(context).primaryColor,
         border: Border(
           bottom: BorderSide(
             color: Theme.of(context).colorScheme.secondary, // Gold Trim

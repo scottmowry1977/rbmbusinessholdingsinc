@@ -23,18 +23,18 @@ class RBMBusinessApp extends StatelessWidget {
       title: 'RBM Business Holdings Inc.',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF1A237E), // Professional Navy Blue
-          primary: const Color(0xFF1A237E),
-          secondary: const Color(0xFFC5A059), // Professional Gold
+          seedColor: const Color(0xFF0C2340), // Notre Dame Navy
+          primary: const Color(0xFF0C2340),
+          secondary: const Color(0xFFC99700), // Notre Dame Gold
         ),
         useMaterial3: true,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF1A237E),
+          backgroundColor: Color(0xFF0C2340),
           foregroundColor: Colors.white,
           elevation: 0,
           shape: Border(
             bottom: BorderSide(
-              color: Color(0xFFC5A059), // Gold Trim
+              color: Color(0xFFC99700), // Gold Trim
               width: 2,
             ),
           ),
@@ -44,19 +44,19 @@ class RBMBusinessApp extends StatelessWidget {
         brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
-          seedColor: const Color(0xFF1A237E),
-          primary: const Color(0xFF1A237E),
-          secondary: const Color(0xFFC5A059),
+          seedColor: const Color(0xFF0C2340),
+          primary: const Color(0xFF0C2340),
+          secondary: const Color(0xFFC99700),
         ),
-        scaffoldBackgroundColor: const Color(0xFF0A0E2E), // Midnight Navy
+        scaffoldBackgroundColor: const Color(0xFF030712), // Deeper Midnight
         useMaterial3: true,
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF0A0E2E),
+          backgroundColor: Color(0xFF030712),
           foregroundColor: Colors.white,
           elevation: 0,
           shape: Border(
             bottom: BorderSide(
-              color: Color(0xFFC5A059), // Gold Trim
+              color: Color(0xFFC99700), // Gold Trim
               width: 2,
             ),
           ),

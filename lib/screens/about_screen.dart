@@ -40,19 +40,19 @@ class AboutScreen extends StatelessWidget {
                 IconButton(
                   onPressed: () => _launchURL('https://www.linkedin.com/company/rbm-business-holdings-inc/'),
                   icon: const Icon(Icons.business),
-                  color: const Color(0xFF1A237E),
+                  color: const Color(0xFF0C2340),
                   tooltip: 'LinkedIn',
                 ),
                 IconButton(
                   onPressed: () => _launchURL('https://twitter.com/RBMBHI'),
                   icon: const Icon(Icons.alternate_email),
-                  color: const Color(0xFF1A237E),
+                  color: const Color(0xFF0C2340),
                   tooltip: 'X (Twitter)',
                 ),
                 IconButton(
                   onPressed: () => _launchURL('https://www.instagram.com/rbmbusinessholdings/'),
                   icon: const Icon(Icons.camera_alt),
-                  color: const Color(0xFF1A237E),
+                  color: const Color(0xFF0C2340),
                   tooltip: 'Instagram',
                 ),
               ],

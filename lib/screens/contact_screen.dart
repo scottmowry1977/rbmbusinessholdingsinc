@@ -107,7 +107,7 @@ class ContactScreen extends StatelessWidget {
           icon: Icon(icon),
           style: IconButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
-            foregroundColor: const Color(0xFFC5A059),
+            foregroundColor: const Color(0xFFC99700),
           ),
         ),
         const SizedBox(height: 4),
