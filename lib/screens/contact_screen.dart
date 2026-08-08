@@ -58,9 +58,61 @@ class ContactScreen extends StatelessWidget {
               Icons.location_on,
               () => _launchURL('https://www.google.com/maps/search/?api=1&query=957+NASA+Pkwy+%231184+Houston+TX+77058'),
             ),
+            const SizedBox(height: 30),
+            const Text(
+              'Connect With Us',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildSocialIcon(
+                  context,
+                  'LinkedIn',
+                  'https://www.linkedin.com/company/rbm-business-holdings-inc/',
+                  Icons.business,
+                ),
+                _buildSocialIcon(
+                  context,
+                  'X (Twitter)',
+                  'https://twitter.com/RBMBHI',
+                  Icons.alternate_email,
+                ),
+                _buildSocialIcon(
+                  context,
+                  'Instagram',
+                  'https://www.instagram.com/rbmbusinessholdings/',
+                  Icons.camera_alt,
+                ),
+                _buildSocialIcon(
+                  context,
+                  'Threads',
+                  'https://www.threads.net/@rbmbusinessholdings',
+                  Icons.forum,
+                ),
+              ],
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildSocialIcon(BuildContext context, String label, String url, IconData icon) {
+    return Column(
+      children: [
+        IconButton.filled(
+          onPressed: () => _launchURL(url),
+          icon: Icon(icon),
+          style: IconButton.styleFrom(
+            backgroundColor: Theme.of(context).primaryColor,
+            foregroundColor: const Color(0xFFC5A059),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(label, style: const TextStyle(fontSize: 12)),
+      ],
     );
   }
 

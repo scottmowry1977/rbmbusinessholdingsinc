@@ -7,6 +7,7 @@ import 'screens/about_screen.dart';
 import 'screens/contact_screen.dart';
 import 'screens/blog_screen.dart';
 import 'screens/consultation_form_screen.dart';
+import 'screens/splash_screen.dart';
 
 void main() {
   runApp(const RBMBusinessApp());
@@ -39,8 +40,9 @@ class RBMBusinessApp extends StatelessWidget {
           ),
         ),
       ),
-      initialRoute: '/',
+      initialRoute: '/splash',
       routes: {
+        '/splash': (context) => const SplashScreen(),
         '/': (context) => const HomeScreen(),
         '/financial': (context) => const FinancialServicesScreen(),
         '/it': (context) => const ITConsultingScreen(),

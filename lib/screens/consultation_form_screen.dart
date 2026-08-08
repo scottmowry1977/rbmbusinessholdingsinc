@@ -107,7 +107,7 @@ class _ConsultationFormScreenState extends State<ConsultationFormScreen> {
               ),
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                value: _selectedService,
+                initialValue: _selectedService,
                 decoration: const InputDecoration(
                   labelText: 'Service of Interest',
                   border: OutlineInputBorder(),
