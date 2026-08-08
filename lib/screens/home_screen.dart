@@ -53,6 +53,14 @@ class HomeScreen extends StatelessWidget {
                   const SizedBox(height: 16),
                   _buildLargeNavCard(
                     context,
+                    'Client Portal & Onboarding',
+                    'Roadmap for new partners and system intake.',
+                    Icons.rocket_launch,
+                    '/onboarding',
+                  ),
+                  const SizedBox(height: 16),
+                  _buildLargeNavCard(
+                    context,
                     'About RBM Holdings',
                     'Learn more about our mission and leadership.',
                     Icons.info_outline,
