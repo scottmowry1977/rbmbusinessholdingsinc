@@ -58,6 +58,12 @@ class ITConsultingScreen extends StatelessWidget {
               'Modernizing legacy phone systems with cloud-based solutions like RingCentral.',
               Icons.quick_contacts_dialer,
             ),
+            _buildServiceCard(
+              context,
+              'Procurement & Vendor Management',
+              'We are partners with multiple top-tier equipment vendors. We manage all hardware and software purchases through our professional vendor system.',
+              Icons.shopping_cart,
+            ),
           ],
         ),
       ),
