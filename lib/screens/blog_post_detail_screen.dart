@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'blog_screen.dart';
+import '../models/blog_post.dart';
 
 class BlogPostDetailScreen extends StatelessWidget {
   final BlogPost post;

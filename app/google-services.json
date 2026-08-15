@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "33885009024",
+    "project_id": "rbm-business-holdings",
+    "storage_bucket": "rbm-business-holdings.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33885009024:android:f3e8ff028bd54119646265",
+        "android_client_info": {
+          "package_name": "com.rbmbusinessholdingsinc.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiDnUTEzM6UcEbmzodId1fNtcU8W4XaQg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'screens/home_screen.dart';
 import 'screens/services/financial_services_screen.dart';
 import 'screens/services/it_consulting_screen.dart';
@@ -10,7 +11,9 @@ import 'screens/consultation_form_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const RBMBusinessApp());
 }
 
