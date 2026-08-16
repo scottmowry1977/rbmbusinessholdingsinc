@@ -24,5 +24,9 @@ class AuthService {
   String? get currentUserEmail => _auth.currentUser?.email;
 
   // Check if admin
-  bool get isAdmin => _auth.currentUser?.email == 'scottm@rbmbusinessholdingsinc.com';
+  bool get isAdmin {
+    final email = _auth.currentUser?.email?.toLowerCase().trim();
+    return email == 'scottm@rbmbusinessholdingsinc.com' || 
+           email == 'scott@rbmbusinessholdingsinc.com';
+  }
 }

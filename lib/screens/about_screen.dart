@@ -15,6 +15,7 @@ class AboutScreen extends StatelessWidget {
 
   void _handleAdminAccess(BuildContext context) {
     final User? user = FirebaseAuth.instance.currentUser;
+    debugPrint('Current User Email: ${user?.email}'); // This helps us debug in the console
     
     if (user == null) {
       // Not logged in
@@ -22,14 +23,15 @@ class AboutScreen extends StatelessWidget {
         const SnackBar(content: Text('Please login to access admin tools.')),
       );
       Navigator.pushNamed(context, '/login');
-    } else if (user.email == 'scottm@rbmbusinessholdingsinc.com') {
+    } else if (user.email?.toLowerCase().trim() == 'scottm@rbmbusinessholdingsinc.com' ||
+               user.email?.toLowerCase().trim() == 'scott@rbmbusinessholdingsinc.com') {
       // Authorized admin
       Navigator.pushNamed(context, '/admin/uploader');
     } else {
       // Logged in but not admin
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Access Denied: Administrative privileges required.'),
+        SnackBar(
+          content: Text('Access Denied: Logged in as ${user.email}. Admin required.'),
           backgroundColor: Colors.red,
         ),
       );

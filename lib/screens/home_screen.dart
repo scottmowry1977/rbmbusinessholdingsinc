@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/auth_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -92,13 +93,38 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            TextButton.icon(
-              onPressed: () => Navigator.pushNamed(context, '/login'),
-              icon: const Icon(Icons.login, size: 16),
-              label: const Text(
-                'Client Login',
-                style: TextStyle(fontSize: 13),
-              ),
+            StreamBuilder(
+              stream: AuthService().user,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  // User is logged in, show Logout
+                  return TextButton.icon(
+                    onPressed: () async {
+                      await AuthService().signOut();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Logged Out Successfully')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.logout, size: 16, color: Colors.red),
+                    label: const Text(
+                      'Logout',
+                      style: TextStyle(fontSize: 13, color: Colors.red),
+                    ),
+                  );
+                } else {
+                  // No user, show Login
+                  return TextButton.icon(
+                    onPressed: () => Navigator.pushNamed(context, '/login'),
+                    icon: const Icon(Icons.login, size: 16),
+                    label: const Text(
+                      'Client Login',
+                      style: TextStyle(fontSize: 13),
+                    ),
+                  );
+                }
+              },
             ),
             const SizedBox(height: 40),
           ],
