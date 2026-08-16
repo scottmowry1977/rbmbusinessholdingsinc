@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/blog_post.dart';
 import '../services/database_service.dart';
+import '../widgets/rbm_loading_indicator.dart';
 import 'blog_post_detail_screen.dart';
 
 class BlogScreen extends StatelessWidget {
@@ -14,11 +15,20 @@ class BlogScreen extends StatelessWidget {
         stream: DatabaseService().streamArticles(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Text(
+                  'Connection error. Please check your network.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.red[700]),
+                ),
+              ),
+            );
           }
           
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const RbmLoadingIndicator();
           }
 
           final posts = snapshot.data ?? [];
@@ -26,20 +36,21 @@ class BlogScreen extends StatelessWidget {
           if (posts.isEmpty) {
             return const Center(
               child: Padding(
-                padding: EdgeInsets.all(24.0),
+                padding: EdgeInsets.all(40.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.article_outlined, size: 60, color: Colors.grey),
-                    SizedBox(height: 16),
+                    Icon(Icons.article_outlined, size: 80, color: Colors.grey),
+                    SizedBox(height: 24),
                     Text(
-                      'No articles found.',
-                      style: TextStyle(fontSize: 18, color: Colors.grey),
+                      'No insights published yet.',
+                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey),
                     ),
+                    SizedBox(height: 8),
                     Text(
-                      'Check back soon for new insights.',
+                      'RBM consultants are currently drafting new strategies for our clients.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.grey),
+                      style: TextStyle(color: Colors.grey, height: 1.5),
                     ),
                   ],
                 ),
@@ -48,13 +59,16 @@ class BlogScreen extends StatelessWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
             itemCount: posts.length,
             itemBuilder: (context, index) {
               final post = posts[index];
               return Card(
-                margin: const EdgeInsets.only(bottom: 16),
+                elevation: 3,
+                margin: const EdgeInsets.only(bottom: 24),
+                shadowColor: Colors.black12,
                 clipBehavior: Clip.antiAlias,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 child: InkWell(
                   onTap: () {
                     Navigator.push(
@@ -65,51 +79,67 @@ class BlogScreen extends StatelessWidget {
                     );
                   },
                   child: Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.all(24.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
+                            color: const Color(0xFFC99700).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            post.category,
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                            post.category.toUpperCase(),
+                            style: const TextStyle(
+                              color: Color(0xFFC99700),
                               fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                              fontSize: 11,
+                              letterSpacing: 1.2,
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 20),
                         Text(
                           post.title,
-                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          post.date,
-                          style: const TextStyle(color: Colors.grey, fontSize: 14),
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          post.excerpt,
-                          style: const TextStyle(fontSize: 15),
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontSize: 22,
+                            height: 1.3,
+                          ),
                         ),
                         const SizedBox(height: 12),
                         Row(
                           children: [
+                            const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                            const SizedBox(width: 8),
                             Text(
-                              'Read More',
+                              post.date,
+                              style: const TextStyle(color: Colors.grey, fontSize: 13),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          post.excerpt,
+                          style: const TextStyle(
+                            fontSize: 15, 
+                            color: Colors.black54,
+                            height: 1.6,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Text(
+                              'READ ARTICLE',
                               style: TextStyle(
                                 color: Theme.of(context).primaryColor,
                                 fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                letterSpacing: 1.0,
                               ),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: 8),
                             Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).primaryColor),
                           ],
                         ),

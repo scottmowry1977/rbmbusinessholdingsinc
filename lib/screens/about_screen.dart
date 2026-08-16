@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -16,61 +17,106 @@ class AboutScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('About Us')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
         child: Column(
           children: [
-            const CircleAvatar(
-              radius: 60,
-              backgroundColor: Colors.grey,
-              child: Icon(Icons.person, size: 80, color: Colors.white),
+            GestureDetector(
+              onLongPress: () {
+                // Admin secret access
+                Navigator.pushNamed(context, '/admin/uploader');
+              },
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFFC99700), width: 2),
+                ),
+                child: const CircleAvatar(
+                  radius: 70,
+                  backgroundColor: Colors.grey,
+                  child: Icon(Icons.person, size: 90, color: Colors.white),
+                ),
+              ),
             ),
-            const SizedBox(height: 20),
-            const Text(
+            const SizedBox(height: 24),
+            Text(
               'Scott Mowry',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.white
+                        : const Color(0xFF0C2340),
+                  ),
             ),
             const Text(
               'CEO & Founder',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 18,
+                color: Color(0xFFC99700),
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.1,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(
-                  onPressed: () => _launchURL('https://www.linkedin.com/company/rbm-business-holdings-inc/'),
-                  icon: const Icon(Icons.business),
-                  color: const Color(0xFF0C2340),
-                  tooltip: 'LinkedIn',
+                _buildSocialIcon(
+                  'https://www.linkedin.com/company/rbm-business-holdings-inc/',
+                  Icons.business,
+                  'LinkedIn',
                 ),
-                IconButton(
-                  onPressed: () => _launchURL('https://twitter.com/RBMBHI'),
-                  icon: const Icon(Icons.alternate_email),
-                  color: const Color(0xFF0C2340),
-                  tooltip: 'X (Twitter)',
+                const SizedBox(width: 20),
+                _buildSocialIcon(
+                  'https://twitter.com/RBMBHI',
+                  Icons.alternate_email,
+                  'X (Twitter)',
                 ),
-                IconButton(
-                  onPressed: () => _launchURL('https://www.instagram.com/rbmbusinessholdings/'),
-                  icon: const Icon(Icons.camera_alt),
-                  color: const Color(0xFF0C2340),
-                  tooltip: 'Instagram',
+                const SizedBox(width: 20),
+                _buildSocialIcon(
+                  'https://www.instagram.com/rbmbusinessholdings/',
+                  Icons.camera_alt,
+                  'Instagram',
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            const Text(
+            const SizedBox(height: 40),
+            Text(
               'RBM Business Holdings Inc. is a full-service professional firm based in Houston, Texas. Led by Scott Mowry, we specialize in providing strategic solutions for both traditional businesses and modern content creators.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, height: 1.5),
+              style: GoogleFonts.montserrat(
+                fontSize: 16,
+                height: 1.8,
+                fontWeight: FontWeight.w400,
+              ),
             ),
-            const SizedBox(height: 20),
-            const Text(
+            const SizedBox(height: 24),
+            Text(
               'Our firm is positioned as a strategic partner for businesses looking to modernize their infrastructure or optimize their financial planning.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, height: 1.5),
+              style: GoogleFonts.montserrat(
+                fontSize: 16,
+                height: 1.8,
+                fontWeight: FontWeight.w400,
+              ),
             ),
+            const SizedBox(height: 40),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSocialIcon(String url, IconData icon, String tooltip) {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFF0C2340).withOpacity(0.05),
+        shape: BoxShape.circle,
+      ),
+      child: IconButton(
+        onPressed: () => _launchURL(url),
+        icon: Icon(icon),
+        color: const Color(0xFF0C2340),
+        tooltip: tooltip,
       ),
     );
   }

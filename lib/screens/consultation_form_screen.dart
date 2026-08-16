@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ConsultationFormScreen extends StatefulWidget {
   const ConsultationFormScreen({super.key});
@@ -70,53 +71,57 @@ class _ConsultationFormScreenState extends State<ConsultationFormScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Request a Consultation')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text(
+              Text(
                 'Let\'s build your strategy.',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: GoogleFonts.playfairDisplay(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xFF0C2340),
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 12),
               const Text(
                 'Fill out the form below and we will get back to you to schedule a professional consultation.',
-                style: TextStyle(fontSize: 15, color: Colors.grey),
+                style: TextStyle(fontSize: 15, color: Colors.grey, height: 1.5),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Full Name',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.person),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.person, size: 20),
                 ),
                 validator: (value) =>
                     (value == null || value.isEmpty) ? 'Please enter your name' : null,
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               TextFormField(
                 controller: _companyController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Company Name',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.business),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.business, size: 20),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               DropdownButtonFormField<String>(
-                initialValue: _selectedService,
-                decoration: const InputDecoration(
+                value: _selectedService,
+                decoration: InputDecoration(
                   labelText: 'Service of Interest',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.category),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  prefixIcon: const Icon(Icons.category, size: 20),
                 ),
                 items: _services.map((String service) {
                   return DropdownMenuItem(
                     value: service,
-                    child: Text(service),
+                    child: Text(service, style: const TextStyle(fontSize: 14)),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
@@ -125,31 +130,28 @@ class _ConsultationFormScreenState extends State<ConsultationFormScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 24),
               TextFormField(
                 controller: _messageController,
                 maxLines: 5,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'How can we help?',
-                  border: OutlineInputBorder(),
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   alignLabelWithHint: true,
                 ),
                 validator: (value) => (value == null || value.isEmpty)
                     ? 'Please tell us a bit about your needs'
                     : null,
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 40),
               ElevatedButton(
                 onPressed: _submitForm,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  minimumSize: const Size(double.infinity, 56),
                 ),
                 child: const Text(
                   'Send Request',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 18, letterSpacing: 0.5),
                 ),
               ),
             ],

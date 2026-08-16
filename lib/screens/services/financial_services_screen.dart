@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FinancialServicesScreen extends StatelessWidget {
   const FinancialServicesScreen({super.key});
@@ -8,20 +9,25 @@ class FinancialServicesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Financial & Tax Services')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Comprehensive Financial Management',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF0C2340),
+                height: 1.2,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
               'RBM Business Holdings provides end-to-end financial oversight and strategic tax planning to ensure your business remains profitable and compliant.',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 40),
             _buildFeatureItem(
               context,
               'Tax Strategy & Planning',
@@ -66,24 +72,31 @@ class FinancialServicesScreen extends StatelessWidget {
 
   Widget _buildFeatureItem(BuildContext context, String title, String description, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.only(bottom: 32),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: Theme.of(context).primaryColor, size: 28),
-          const SizedBox(width: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0C2340).withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: const Color(0xFFC99700), size: 28),
+          ),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 0.2),
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 8),
                 Text(
                   description,
-                  style: const TextStyle(fontSize: 15, height: 1.4),
+                  style: const TextStyle(fontSize: 15, color: Colors.black54, height: 1.6),
                 ),
               ],
             ),

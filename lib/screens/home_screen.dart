@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -14,15 +15,15 @@ class HomeScreen extends StatelessWidget {
           children: [
             _buildHeroSection(context),
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 24.0),
               child: Column(
                 children: [
                   GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 20,
+                    mainAxisSpacing: 20,
                     children: [
                       _buildServiceCard(
                         context,
@@ -50,7 +51,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 24),
                   _buildLargeNavCard(
                     context,
                     'Client Portal & Onboarding',
@@ -58,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                     Icons.rocket_launch,
                     '/onboarding',
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   _buildLargeNavCard(
                     context,
                     'About RBM Holdings',
@@ -70,22 +71,25 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: () => Navigator.pushNamed(context, '/consultation'),
-              icon: const Icon(Icons.calendar_today),
-              label: const Text('Request a Consultation'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).primaryColor,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: ElevatedButton.icon(
+                onPressed: () => Navigator.pushNamed(context, '/consultation'),
+                icon: const Icon(Icons.calendar_today, size: 20),
+                label: const Text('Request a Consultation'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 56),
+                ),
               ),
             ),
             const SizedBox(height: 12),
             TextButton.icon(
               onPressed: () => Navigator.pushNamed(context, '/contact'),
               icon: const Icon(Icons.mail_outline),
-              label: const Text('General Contact'),
+              label: Text(
+                'General Contact',
+                style: TextStyle(color: Theme.of(context).primaryColor),
+              ),
             ),
             const SizedBox(height: 40),
           ],
@@ -98,12 +102,12 @@ class HomeScreen extends StatelessWidget {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 60, horizontal: 20),
+      padding: const EdgeInsets.symmetric(vertical: 80, horizontal: 24),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF071426) : Theme.of(context).primaryColor,
         border: Border(
           bottom: BorderSide(
-            color: Theme.of(context).colorScheme.secondary, // Gold Trim
+            color: Theme.of(context).colorScheme.secondary,
             width: 3,
           ),
         ),
@@ -114,22 +118,24 @@ class HomeScreen extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
+          Text(
             'Strategic Solutions for Modern Business',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: GoogleFonts.playfairDisplay(
               color: Colors.white,
-              fontSize: 28,
+              fontSize: 32,
               fontWeight: FontWeight.bold,
+              height: 1.2,
             ),
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
           Text(
             'Expertise in IT Infrastructure, Finance, and M&A Integration',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.9),
+              color: Colors.white.withOpacity(0.9),
               fontSize: 16,
+              letterSpacing: 0.5,
             ),
           ),
         ],
@@ -140,18 +146,19 @@ class HomeScreen extends StatelessWidget {
   Widget _buildServiceCard(
       BuildContext context, String title, IconData icon, String route) {
     return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 4,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: InkWell(
         onTap: () => Navigator.pushNamed(context, route),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(20),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, size: 40, color: Theme.of(context).primaryColor),
-              const SizedBox(height: 12),
+              Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary),
+              const SizedBox(height: 16),
               Text(
                 title,
                 textAlign: TextAlign.center,
@@ -171,13 +178,18 @@ class HomeScreen extends StatelessWidget {
       BuildContext context, String title, String subtitle, IconData icon, String route) {
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         onTap: () => Navigator.pushNamed(context, route),
-        leading: Icon(icon, color: Theme.of(context).primaryColor, size: 30),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-        subtitle: Text(subtitle),
-        trailing: const Icon(Icons.chevron_right),
+        leading: Icon(icon, color: Theme.of(context).colorScheme.secondary, size: 32),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4.0),
+          child: Text(subtitle, style: const TextStyle(fontSize: 13)),
+        ),
+        trailing: const Icon(Icons.chevron_right, size: 20),
       ),
     );
   }

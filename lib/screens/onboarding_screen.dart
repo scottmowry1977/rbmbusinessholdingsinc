@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -54,13 +55,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
           controller: _tabController,
           isScrollable: true,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
-          indicatorColor: Theme.of(context).colorScheme.secondary,
+          unselectedLabelColor: Colors.white.withOpacity(0.6),
+          indicatorColor: const Color(0xFFC99700),
+          indicatorWeight: 3,
+          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
           tabs: const [
-            Tab(text: 'General & IT', icon: Icon(Icons.business_center)),
-            Tab(text: 'Tax Clients', icon: Icon(Icons.calculate)),
-            Tab(text: 'Accounting', icon: Icon(Icons.account_balance)),
-            Tab(text: 'Business Consulting', icon: Icon(Icons.trending_up)),
+            Tab(text: 'GENERAL & IT', icon: Icon(Icons.business_center, size: 20)),
+            Tab(text: 'TAX CLIENTS', icon: Icon(Icons.calculate, size: 20)),
+            Tab(text: 'ACCOUNTING', icon: Icon(Icons.account_balance, size: 20)),
+            Tab(text: 'CONSULTING', icon: Icon(Icons.trending_up, size: 20)),
           ],
         ),
       ),
@@ -78,20 +81,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   Widget _buildGeneralOnboarding(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Your Roadmap to Success',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
+          _buildSectionHeader('Your Roadmap to Success'),
+          const SizedBox(height: 12),
           const Text(
             'Follow these steps to initialize your professional partnership with RBM Business Holdings.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 40),
           _buildRoadmapStep(
             context,
             1,
@@ -128,7 +128,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               'Point of Contact for Daily Operations',
             ],
           ),
-          const SizedBox(height: 40),
         ],
       ),
     );
@@ -136,20 +135,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   Widget _buildTaxOnboarding(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Tax Client Roadmap',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
+          _buildSectionHeader('Tax Client Roadmap'),
+          const SizedBox(height: 12),
           const Text(
             'Streamlined onboarding for individual and corporate tax planning clients.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 40),
           _buildRoadmapStep(
             context,
             1,
@@ -186,7 +182,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               'Investment & Real Estate Records',
             ],
           ),
-          const SizedBox(height: 40),
         ],
       ),
     );
@@ -194,20 +189,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   Widget _buildAccountingOnboarding(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Accounting Client Roadmap',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
+          _buildSectionHeader('Accounting Roadmap'),
+          const SizedBox(height: 12),
           const Text(
             'Transitioning your daily financial operations to RBM management.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 40),
           _buildRoadmapStep(
             context,
             1,
@@ -244,7 +236,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               'Open Accounts Payable/Receivable reports',
             ],
           ),
-          const SizedBox(height: 40),
         ],
       ),
     );
@@ -252,20 +243,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   Widget _buildBusinessOnboarding(BuildContext context) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(24.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Strategic Consulting Roadmap',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
+          _buildSectionHeader('Consulting Roadmap'),
+          const SizedBox(height: 12),
           const Text(
             'Laying the foundation for your business growth and operational efficiency.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
+            style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 40),
           _buildRoadmapStep(
             context,
             1,
@@ -302,8 +290,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               'Access to historical performance data',
             ],
           ),
-          const SizedBox(height: 40),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String text) {
+    return Text(
+      text,
+      style: GoogleFonts.playfairDisplay(
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+        color: const Color(0xFF0C2340),
       ),
     );
   }
@@ -312,9 +310,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 40),
+        const SizedBox(height: 48),
         const Divider(),
-        const SizedBox(height: 20),
+        const SizedBox(height: 32),
         const Text(
           'Desktop Handoff',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -322,24 +320,27 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         const SizedBox(height: 12),
         const Text(
           'Our intake forms are comprehensive. We recommend completing them on a laptop or desktop.',
-          style: TextStyle(fontSize: 15),
+          style: TextStyle(fontSize: 15, height: 1.5),
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 28),
         ElevatedButton.icon(
           onPressed: _sendLinkToSelf,
-          icon: const Icon(Icons.email_outlined),
+          icon: const Icon(Icons.email_outlined, size: 20),
           label: const Text('Email Link to My Computer'),
           style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 50),
+            minimumSize: const Size(double.infinity, 56),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         OutlinedButton.icon(
           onPressed: () => _launchURL(portalUrl),
-          icon: const Icon(Icons.open_in_browser),
+          icon: const Icon(Icons.open_in_browser, size: 20),
           label: const Text('Open Web Portal Now'),
           style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 50),
+            minimumSize: const Size(double.infinity, 56),
+            side: const BorderSide(color: Color(0xFF0C2340)),
+            foregroundColor: const Color(0xFF0C2340),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         ),
       ],
@@ -347,50 +348,58 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   }
 
   Widget _buildRoadmapStep(BuildContext context, int number, String title, String detail, IconData icon, bool isDone) {
-    final Color primaryColor = Theme.of(context).primaryColor;
-    final Color goldColor = Theme.of(context).colorScheme.secondary;
+    final Color primaryColor = const Color(0xFF0C2340);
+    final Color goldColor = const Color(0xFFC99700);
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 24.0),
+      padding: const EdgeInsets.only(bottom: 28.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: isDone ? Colors.green : primaryColor,
                   shape: BoxShape.circle,
                   border: Border.all(color: goldColor, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Center(
                   child: isDone 
-                    ? const Icon(Icons.check, color: Colors.white, size: 20)
-                    : Text('$number', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ? const Icon(Icons.check, color: Colors.white, size: 24)
+                    : Text('$number', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
                 ),
               ),
               if (number < 3)
                 Container(
                   width: 2,
-                  height: 40,
-                  color: primaryColor.withValues(alpha: 0.3),
+                  height: 48,
+                  color: primaryColor.withOpacity(0.15),
                 ),
             ],
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 4),
-                Text(detail, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 0.2)),
+                const SizedBox(height: 6),
+                Text(detail, style: const TextStyle(fontSize: 14, color: Colors.black54, height: 1.4)),
               ],
             ),
           ),
-          Icon(icon, color: primaryColor.withValues(alpha: 0.5)),
+          const SizedBox(width: 12),
+          Icon(icon, color: primaryColor.withOpacity(0.2), size: 28),
         ],
       ),
     );
@@ -398,25 +407,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   Widget _buildPreparationSection(BuildContext context, String title, List<String> items) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2)),
+        color: const Color(0xFFC99700).withOpacity(0.05),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: const Color(0xFFC99700).withOpacity(0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.lightbulb, color: Theme.of(context).colorScheme.secondary),
-              const SizedBox(width: 8),
-              Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              const Icon(Icons.lightbulb, color: Color(0xFFC99700), size: 24),
+              const SizedBox(width: 12),
+              Text(
+                title, 
+                style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0C2340)),
+              ),
             ],
           ),
-          const SizedBox(height: 12),
-          const Text('Have these items ready before starting intake:', style: TextStyle(fontSize: 14)),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          const Text('Have these items ready before starting intake:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+          const SizedBox(height: 16),
           ...items.map((item) => _buildBulletPoint(item)).toList(),
         ],
       ),
@@ -425,12 +437,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
 
   Widget _buildBulletPoint(String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 6.0),
+      padding: const EdgeInsets.only(bottom: 10.0),
       child: Row(
         children: [
-          const Icon(Icons.arrow_right, size: 18),
-          const SizedBox(width: 4),
-          Text(text, style: const TextStyle(fontSize: 14)),
+          const Icon(Icons.check_circle_outline, size: 16, color: Color(0xFFC99700)),
+          const SizedBox(width: 10),
+          Expanded(child: Text(text, style: const TextStyle(fontSize: 14, color: Colors.black87))),
         ],
       ),
     );

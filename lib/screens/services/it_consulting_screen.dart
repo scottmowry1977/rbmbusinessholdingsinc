@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class ITConsultingScreen extends StatelessWidget {
   const ITConsultingScreen({super.key});
@@ -8,20 +9,25 @@ class ITConsultingScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Managed IT Consulting')),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Enterprise-Grade Technology Solutions',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: GoogleFonts.playfairDisplay(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: const Color(0xFF0C2340),
+                height: 1.2,
+              ),
             ),
             const SizedBox(height: 16),
             const Text(
               'RBM provides proactive 24/7 monitoring and infrastructure management to ensure your technical operations are secure and scalable.',
-              style: TextStyle(fontSize: 16),
+              style: TextStyle(fontSize: 16, color: Colors.grey, height: 1.5),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 40),
             _buildServiceCard(
               context,
               'Cybersecurity & Threat Detection',
@@ -72,24 +78,25 @@ class ITConsultingScreen extends StatelessWidget {
 
   Widget _buildServiceCard(BuildContext context, String title, String detail, IconData icon) {
     return Card(
-      elevation: 2,
-      margin: const EdgeInsets.only(bottom: 20),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
+      shadowColor: Colors.black12,
+      margin: const EdgeInsets.only(bottom: 24),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: ListTile(
           leading: Container(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+              color: const Color(0xFF0C2340).withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, size: 30, color: Theme.of(context).primaryColor),
+            child: Icon(icon, size: 28, color: const Color(0xFFC99700)),
           ),
           title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(detail, style: const TextStyle(height: 1.3)),
+            child: Text(detail, style: const TextStyle(height: 1.5, fontSize: 14)),
           ),
         ),
       ),
