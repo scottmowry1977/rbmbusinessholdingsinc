@@ -1,5 +1,5 @@
-import java.util.Properties
-import java.io.FileInputStream
+import java.util.Properties as JProperties
+import java.io.FileInputStream as JFileInputStream
 
 plugins {
     id("com.android.application")
@@ -31,10 +31,10 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystoreProperties = Properties()
+            val keystoreProperties = JProperties()
             val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
-                val stream = FileInputStream(keystorePropertiesFile)
+                val stream = JFileInputStream(keystorePropertiesFile)
                 keystoreProperties.load(stream)
                 stream.close()
             }

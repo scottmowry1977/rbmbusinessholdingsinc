@@ -1,13 +1,13 @@
-import java.util.Properties
-import java.io.FileInputStream
+import java.util.Properties as JProperties
+import java.io.FileInputStream as JFileInputStream
 
 pluginManagement {
     val flutterSdkPath =
         run {
-            val properties = Properties()
+            val properties = JProperties()
             val localPropertiesFile = file("local.properties")
             if (localPropertiesFile.exists()) {
-                val stream = FileInputStream(localPropertiesFile)
+                val stream = JFileInputStream(localPropertiesFile)
                 properties.load(stream)
                 stream.close()
             }
