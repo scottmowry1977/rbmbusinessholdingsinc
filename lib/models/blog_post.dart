@@ -42,10 +42,22 @@ class BlogPost {
     int ts = 0;
     try {
       if (item.pubDate != null) {
-        // Simple attempt to parse common RSS date format
-        DateTime dateTime = DateFormat("EEE, dd MMM yyyy HH:mm:ss Z").parse(item.pubDate!);
-        formattedDate = DateFormat("MMM dd, yyyy").format(dateTime);
-        ts = int.parse(DateFormat("yyyyMMdd").format(dateTime));
+        // Try various date formats common in RSS
+        DateTime? dateTime;
+        try {
+          dateTime = DateFormat("EEE, dd MMM yyyy HH:mm:ss Z").parse(item.pubDate!);
+        } catch (_) {
+          try {
+            dateTime = DateFormat("EEE, dd MMM yyyy HH:mm:ss zzz").parse(item.pubDate!);
+          } catch (_) {
+            dateTime = DateTime.tryParse(item.pubDate!);
+          }
+        }
+        
+        if (dateTime != null) {
+          formattedDate = DateFormat("MMM dd, yyyy").format(dateTime);
+          ts = int.parse(DateFormat("yyyyMMdd").format(dateTime));
+        }
       }
     } catch (e) {
       formattedDate = item.pubDate ?? 'Recent';
@@ -54,12 +66,37 @@ class BlogPost {
     return BlogPost(
       id: item.guid ?? item.link ?? '',
       title: item.title ?? 'No Title',
-      date: formattedDate,
+      date: formattedDate.isEmpty ? (item.pubDate ?? 'Recent') : formattedDate,
       excerpt: item.description ?? '',
       content: item.content?.value ?? item.description ?? '',
       category: 'Website',
       timestamp: ts,
       url: item.link,
+    );
+  }
+
+  factory BlogPost.fromAtom(AtomItem item) {
+    String formattedDate = '';
+    int ts = 0;
+    try {
+      if (item.updated != null) {
+        DateTime dateTime = DateTime.parse(item.updated!);
+        formattedDate = DateFormat("MMM dd, yyyy").format(dateTime);
+        ts = int.parse(DateFormat("yyyyMMdd").format(dateTime));
+      }
+    } catch (e) {
+      formattedDate = item.updated ?? 'Recent';
+    }
+
+    return BlogPost(
+      id: item.id ?? item.links.first.href ?? '',
+      title: item.title ?? 'No Title',
+      date: formattedDate.isEmpty ? (item.updated ?? 'Recent') : formattedDate,
+      excerpt: item.summary ?? '',
+      content: item.content ?? item.summary ?? '',
+      category: 'Website',
+      timestamp: ts,
+      url: item.links.isNotEmpty ? item.links.first.href : null,
     );
   }
 }
