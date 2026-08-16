@@ -46,14 +46,14 @@ class ITConsultingScreen extends StatelessWidget {
                   ),
                   _buildServiceCard(
                     context,
-                    'Cloud Solutions (M365 & Azure)',
-                    'Cloud migration, hosting, and identity management via Azure AD and Virtual Machines.',
+                    'Cloud Solutions (AWS, M365 & Azure)',
+                    'Cloud migration, hosting, and identity management via AWS, Azure AD, and Virtual Machines.',
                     Icons.cloud_done,
                   ),
                   _buildServiceCard(
                     context,
                     'Infrastructure & Network Design',
-                    'Network design (Ubiquiti), hardware procurement, and server installation for modern businesses.',
+                    'Network design, hardware procurement, and server installation for modern businesses.',
                     Icons.settings_input_component,
                   ),
                   _buildServiceCard(
