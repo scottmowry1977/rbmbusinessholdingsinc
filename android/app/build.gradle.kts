@@ -1,6 +1,3 @@
-import java.util.Properties as JProperties
-import java.io.FileInputStream as JFileInputStream
-
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -14,8 +11,8 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
     }
 
     defaultConfig {
@@ -31,10 +28,10 @@ android {
 
     signingConfigs {
         create("release") {
-            val keystoreProperties = JProperties()
+            val keystoreProperties = java.util.Properties()
             val keystorePropertiesFile = rootProject.file("key.properties")
             if (keystorePropertiesFile.exists()) {
-                val stream = JFileInputStream(keystorePropertiesFile)
+                val stream = java.io.FileInputStream(keystorePropertiesFile)
                 keystoreProperties.load(stream)
                 stream.close()
             }
@@ -57,7 +54,7 @@ android {
 
 kotlin {
     compilerOptions {
-        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21
     }
 }
 
