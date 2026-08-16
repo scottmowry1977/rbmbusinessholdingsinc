@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../models/blog_post.dart';
 import '../services/blog_service.dart';
 import '../widgets/rbm_loading_indicator.dart';
@@ -8,13 +7,6 @@ import 'blog_post_detail_screen.dart';
 
 class BlogScreen extends StatelessWidget {
   const BlogScreen({super.key});
-
-  Future<void> _launchURL(String urlString) async {
-    final Uri url = Uri.parse(urlString);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,16 +78,12 @@ class BlogScreen extends StatelessWidget {
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: InkWell(
                     onTap: () {
-                      if (post.url != null) {
-                        _launchURL(post.url!);
-                      } else {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BlogPostDetailScreen(post: post),
-                          ),
-                        );
-                      }
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BlogPostDetailScreen(post: post),
+                        ),
+                      );
                     },
                     child: Padding(
                       padding: const EdgeInsets.all(24.0),
@@ -152,7 +140,7 @@ class BlogScreen extends StatelessWidget {
                           Row(
                             children: [
                               Text(
-                                post.url != null ? 'READ ON WEBSITE' : 'READ ARTICLE',
+                                'READ ARTICLE',
                                 style: TextStyle(
                                   color: Theme.of(context).primaryColor,
                                   fontWeight: FontWeight.bold,
