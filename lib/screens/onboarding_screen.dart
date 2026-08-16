@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../widgets/app_drawer.dart';
 
@@ -12,7 +11,6 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  final String portalUrl = 'https://rbmbusinessholdingsinc.com/client-forms';
 
   @override
   void initState() {
@@ -24,27 +22,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   void dispose() {
     _tabController.dispose();
     super.dispose();
-  }
-
-  Future<void> _launchURL(String urlString) async {
-    final Uri url = Uri.parse(urlString);
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
-  Future<void> _sendLinkToSelf() async {
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: '',
-      queryParameters: {
-        'subject': 'Link to RBM Client Portal',
-        'body': 'Open this link on your computer to complete your onboarding intake:\n\n$portalUrl',
-      },
-    );
-    if (await canLaunchUrl(emailUri)) {
-      await launchUrl(emailUri);
-    }
   }
 
   @override
@@ -113,7 +90,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
             context,
             2,
             'Professional Intake',
-            'Complete our detailed intake form on a desktop computer for maximum accuracy.',
+            'Complete our detailed intake form on your desktop computer.',
             Icons.computer,
             false,
           ),
@@ -167,7 +144,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
             context,
             2,
             'Tax Intake Session',
-            'Complete the specialized tax intake form via our secure web portal.',
+            'Complete the specialized tax intake form on your desktop computer.',
             Icons.description,
             false,
           ),
@@ -323,33 +300,41 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         const Divider(),
         const SizedBox(height: 32),
         const Text(
-          'Desktop Handoff',
+          'Next Steps: Desktop Intake',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
-        const Text(
-          'Our intake forms are comprehensive. We recommend completing them on a laptop or desktop.',
-          style: TextStyle(fontSize: 15, height: 1.5),
-        ),
-        const SizedBox(height: 28),
-        ElevatedButton.icon(
-          onPressed: _sendLinkToSelf,
-          icon: const Icon(Icons.email_outlined, size: 20),
-          label: const Text('Email Link to My Computer'),
-          style: ElevatedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 56),
-          ),
-        ),
         const SizedBox(height: 16),
-        OutlinedButton.icon(
-          onPressed: () => _launchURL(portalUrl),
-          icon: const Icon(Icons.open_in_browser, size: 20),
-          label: const Text('Open Web Portal Now'),
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size(double.infinity, 56),
-            side: const BorderSide(color: Color(0xFF0C2340)),
-            foregroundColor: const Color(0xFF0C2340),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: const Color(0xFF0C2340).withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFF0C2340).withOpacity(0.1)),
+          ),
+          child: Column(
+            children: [
+              const Icon(Icons.laptop_mac, size: 48, color: Color(0xFF0C2340)),
+              const SizedBox(height: 16),
+              Text(
+                'To ensure the highest accuracy for your business data, our intake forms must be completed on a computer.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.montserrat(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF0C2340),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                'Please visit rbmbusinessholdingsinc.com on your desktop or laptop and navigate to the Client Forms page to begin.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 14,
+                  height: 1.5,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
           ),
         ),
       ],
