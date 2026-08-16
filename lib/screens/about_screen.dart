@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -9,6 +10,29 @@ class AboutScreen extends StatelessWidget {
     final Uri url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
+    }
+  }
+
+  void _handleAdminAccess(BuildContext context) {
+    final User? user = FirebaseAuth.instance.currentUser;
+    
+    if (user == null) {
+      // Not logged in
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login to access admin tools.')),
+      );
+      Navigator.pushNamed(context, '/login');
+    } else if (user.email == 'scottm@rbmbusinessholdingsinc.com') {
+      // Authorized admin
+      Navigator.pushNamed(context, '/admin/uploader');
+    } else {
+      // Logged in but not admin
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Access Denied: Administrative privileges required.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -21,10 +45,7 @@ class AboutScreen extends StatelessWidget {
         child: Column(
           children: [
             GestureDetector(
-              onLongPress: () {
-                // Admin secret access
-                Navigator.pushNamed(context, '/admin/uploader');
-              },
+              onLongPress: () => _handleAdminAccess(context),
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
@@ -35,7 +56,7 @@ class AboutScreen extends StatelessWidget {
                   radius: 70,
                   backgroundColor: Colors.grey[200],
                   backgroundImage: const AssetImage('assets/images/scott_mowry_profile.jpg'),
-                  child: null, // Removes the icon placeholder
+                  child: null,
                 ),
               ),
             ),

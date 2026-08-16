@@ -91,6 +91,15 @@ class HomeScreen extends StatelessWidget {
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
             ),
+            const SizedBox(height: 8),
+            TextButton.icon(
+              onPressed: () => Navigator.pushNamed(context, '/login'),
+              icon: const Icon(Icons.login, size: 16),
+              label: const Text(
+                'Client Login',
+                style: TextStyle(fontSize: 13),
+              ),
+            ),
             const SizedBox(height: 40),
           ],
         ),

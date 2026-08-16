@@ -12,6 +12,7 @@ import 'screens/consultation_form_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/admin/article_uploader_screen.dart';
+import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -153,6 +154,7 @@ class RBMBusinessApp extends StatelessWidget {
         '/consultation': (context) => const ConsultationFormScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/admin/uploader': (context) => const ArticleUploaderScreen(),
+        '/login': (context) => const LoginScreen(),
       },
     );
   }
