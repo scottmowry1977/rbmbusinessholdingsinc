@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import '../models/blog_post.dart';
 
 class BlogPostDetailScreen extends StatelessWidget {
@@ -9,6 +10,9 @@ class BlogPostDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const Color notreDameNavy = Color(0xFF0C2340);
+    const Color notreDameGold = Color(0xFFC99700);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Article'),
@@ -21,13 +25,13 @@ class BlogPostDetailScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: const Color(0xFFC99700).withOpacity(0.1),
+                color: notreDameGold.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
                 post.category.toUpperCase(),
                 style: const TextStyle(
-                  color: Color(0xFFC99700),
+                  color: notreDameGold,
                   fontWeight: FontWeight.bold,
                   fontSize: 12,
                   letterSpacing: 1.2,
@@ -38,9 +42,11 @@ class BlogPostDetailScreen extends StatelessWidget {
             Text(
               post.title,
               style: GoogleFonts.playfairDisplay(
-                fontSize: 32,
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF0C2340),
+                color: Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.white 
+                    : notreDameNavy,
                 height: 1.2,
               ),
             ),
@@ -56,14 +62,31 @@ class BlogPostDetailScreen extends StatelessWidget {
               ],
             ),
             const Divider(height: 64),
-            Text(
-              post.content.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''), // Basic HTML strip
-              style: const TextStyle(
-                fontSize: 17,
-                height: 1.8,
-                color: Colors.black87,
+            HtmlWidget(
+              post.content,
+              textStyle: TextStyle(
+                fontSize: 16,
+                height: 1.7,
+                color: Theme.of(context).brightness == Brightness.dark 
+                    ? Colors.white.withOpacity(0.9) 
+                    : Colors.black87,
                 letterSpacing: 0.2,
               ),
+              customStylesBuilder: (element) {
+                if (element.localName == 'h1' || element.localName == 'h2') {
+                  return {
+                    'color': '#0C2340',
+                    'font-family': 'Playfair Display',
+                    'font-weight': 'bold',
+                    'margin-top': '24px',
+                    'margin-bottom': '12px'
+                  };
+                }
+                if (element.localName == 'strong') {
+                  return {'color': '#0C2340', 'font-weight': 'bold'};
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 60),
             Center(

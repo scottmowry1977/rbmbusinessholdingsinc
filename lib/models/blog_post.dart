@@ -63,12 +63,15 @@ class BlogPost {
       formattedDate = item.pubDate ?? 'Recent';
     }
 
+    // Prioritize content:encoded for full text, fallback to description
+    String fullContent = item.content?.value ?? item.description ?? '';
+
     return BlogPost(
       id: item.guid ?? item.link ?? '',
       title: item.title ?? 'No Title',
       date: formattedDate.isEmpty ? (item.pubDate ?? 'Recent') : formattedDate,
       excerpt: item.description ?? '',
-      content: item.content?.value ?? item.description ?? '',
+      content: fullContent,
       category: 'Website',
       timestamp: ts,
       url: item.link,

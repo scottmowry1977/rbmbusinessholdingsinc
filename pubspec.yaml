@@ -19,6 +19,7 @@ dependencies:
   http: ^1.2.1
   dart_rss: ^3.0.3
   rxdart: ^0.28.0
+  flutter_widget_from_html: ^0.17.2
 
 dev_dependencies:
   flutter_test:
