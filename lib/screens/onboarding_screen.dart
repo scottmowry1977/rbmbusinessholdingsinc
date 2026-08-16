@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../widgets/app_drawer.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -49,32 +50,40 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Client Onboarding'),
-        bottom: TabBar(
+      drawer: const AppDrawer(),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          SliverAppBar(
+            title: const Text('Client Onboarding'),
+            pinned: true,
+            floating: true,
+            forceElevated: innerBoxIsScrolled,
+            bottom: TabBar(
+              controller: _tabController,
+              isScrollable: true,
+              labelColor: Colors.white,
+              unselectedLabelColor: Colors.white.withOpacity(0.6),
+              indicatorColor: const Color(0xFFC99700),
+              indicatorWeight: 3,
+              labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+              tabs: const [
+                Tab(text: 'GENERAL & IT', icon: Icon(Icons.business_center, size: 20)),
+                Tab(text: 'TAX CLIENTS', icon: Icon(Icons.calculate, size: 20)),
+                Tab(text: 'ACCOUNTING', icon: Icon(Icons.account_balance, size: 20)),
+                Tab(text: 'CONSULTING', icon: Icon(Icons.trending_up, size: 20)),
+              ],
+            ),
+          ),
+        ],
+        body: TabBarView(
           controller: _tabController,
-          isScrollable: true,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withOpacity(0.6),
-          indicatorColor: const Color(0xFFC99700),
-          indicatorWeight: 3,
-          labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-          tabs: const [
-            Tab(text: 'GENERAL & IT', icon: Icon(Icons.business_center, size: 20)),
-            Tab(text: 'TAX CLIENTS', icon: Icon(Icons.calculate, size: 20)),
-            Tab(text: 'ACCOUNTING', icon: Icon(Icons.account_balance, size: 20)),
-            Tab(text: 'CONSULTING', icon: Icon(Icons.trending_up, size: 20)),
+          children: [
+            _buildGeneralOnboarding(context),
+            _buildTaxOnboarding(context),
+            _buildAccountingOnboarding(context),
+            _buildBusinessOnboarding(context),
           ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _buildGeneralOnboarding(context),
-          _buildTaxOnboarding(context),
-          _buildAccountingOnboarding(context),
-          _buildBusinessOnboarding(context),
-        ],
       ),
     );
   }

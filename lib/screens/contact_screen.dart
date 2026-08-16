@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../widgets/app_drawer.dart';
 
 class ContactScreen extends StatelessWidget {
   const ContactScreen({super.key});
@@ -15,6 +16,7 @@ class ContactScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Contact Us')),
+      drawer: const AppDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(

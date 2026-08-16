@@ -3,6 +3,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../models/blog_post.dart';
 import '../services/blog_service.dart';
 import '../widgets/rbm_loading_indicator.dart';
+import '../widgets/app_drawer.dart';
 import 'blog_post_detail_screen.dart';
 
 class BlogScreen extends StatelessWidget {
@@ -19,6 +20,7 @@ class BlogScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Insights & News')),
+      drawer: const AppDrawer(),
       body: StreamBuilder<List<BlogPost>>(
         stream: BlogService().streamAllPosts(),
         builder: (context, snapshot) {
