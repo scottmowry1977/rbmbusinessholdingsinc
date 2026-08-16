@@ -5,7 +5,7 @@ import 'database_service.dart';
 import 'dart:async';
 
 class BlogService {
-  final String rssUrl = 'https://rbmbusinessholdingsinc.com/feed/';
+  final String rssUrl = 'https://rbmbusinessholdingsinc.com/feed.xml'; // Verified GoDaddy Airo path
 
   Future<List<BlogPost>> fetchAllPosts() async {
     List<BlogPost> allPosts = [];
