@@ -31,10 +31,11 @@ class AboutScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                   border: Border.all(color: const Color(0xFFC99700), width: 2),
                 ),
-                child: const CircleAvatar(
+                child: CircleAvatar(
                   radius: 70,
-                  backgroundColor: Colors.grey,
-                  child: Icon(Icons.person, size: 90, color: Colors.white),
+                  backgroundColor: Colors.grey[200],
+                  backgroundImage: const AssetImage('assets/images/scott_mowry_profile.jpg'),
+                  child: null, // Removes the icon placeholder
                 ),
               ),
             ),
