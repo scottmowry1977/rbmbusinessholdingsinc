@@ -1,6 +1,3 @@
-import java.util.Properties
-import java.io.FileInputStream
-
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
@@ -8,12 +5,17 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
-// Load keystore properties at the top level to avoid naming conflicts inside the android block
-val keystoreProperties = Properties()
+// Manual parsing of keystore properties to avoid naming conflicts with AGP 9.0
+val keystoreProperties = mutableMapOf<String, String>()
 val keystorePropertiesFile = rootProject.file("key.properties")
 if (keystorePropertiesFile.exists()) {
-    keystorePropertiesFile.inputStream().use { stream ->
-        keystoreProperties.load(stream)
+    keystorePropertiesFile.readLines().forEach { line ->
+        if (line.contains("=")) {
+            val parts = line.split("=", limit = 2)
+            if (parts.size == 2) {
+                keystoreProperties[parts[0].trim()] = parts[1].trim()
+            }
+        }
     }
 }
 
@@ -28,10 +30,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.rbmbusinessholdingsinc.app"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
@@ -40,13 +39,13 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties.getProperty("keyAlias")
-            keyPassword = keystoreProperties.getProperty("keyPassword")
-            val storeFilePath = keystoreProperties.getProperty("storeFile")
-            if (storeFilePath != null) {
-                storeFile = file(storeFilePath)
+            keyAlias = keystoreProperties["keyAlias"]
+            keyPassword = keystoreProperties["keyPassword"]
+            val storePath = keystoreProperties["storeFile"]
+            if (storePath != null) {
+                storeFile = file(storePath.replace("\\\\", "\\"))
             }
-            storePassword = keystoreProperties.getProperty("storePassword")
+            storePassword = keystoreProperties["storePassword"]
         }
     }
 
