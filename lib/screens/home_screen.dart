@@ -32,43 +32,37 @@ class HomeScreen extends StatelessWidget {
                         context,
                         'Financial Services',
                         Icons.account_balance,
-                        '/financial',
                       ),
                       _buildServiceCard(
                         context,
                         'IT Consulting',
                         Icons.computer,
-                        '/it',
                       ),
                       _buildServiceCard(
                         context,
                         'Business Strategy',
                         Icons.trending_up,
-                        '/business',
                       ),
                       _buildServiceCard(
                         context,
                         'Insights & News',
                         Icons.article,
-                        '/blog',
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
-                  _buildLargeNavCard(
+                  _buildLargeInfoCard(
                     context,
                     'Client Portal & Onboarding',
                     'Roadmap for new partners and system intake.',
                     Icons.rocket_launch,
-                    '/onboarding',
                   ),
                   const SizedBox(height: 20),
-                  _buildLargeNavCard(
+                  _buildLargeInfoCard(
                     context,
                     'About RBM Holdings',
                     'Learn more about our mission and leadership.',
                     Icons.info_outline,
-                    '/about',
                   ),
                 ],
               ),
@@ -181,52 +175,61 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildServiceCard(
-      BuildContext context, String title, IconData icon, String route) {
+      BuildContext context, String title, IconData icon) {
     return Card(
-      elevation: 4,
-      shadowColor: Colors.black26,
+      elevation: 2,
+      shadowColor: Colors.black12,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, route),
-        borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary),
-              const SizedBox(height: 16),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary.withOpacity(0.5)),
+            const SizedBox(height: 16),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+                color: Colors.grey[600],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildLargeNavCard(
-      BuildContext context, String title, String subtitle, IconData icon, String route) {
+  Widget _buildLargeInfoCard(
+      BuildContext context, String title, String subtitle, IconData icon) {
     return Card(
-      elevation: 2,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 1,
+      shadowColor: Colors.transparent,
+      color: Theme.of(context).primaryColor.withOpacity(0.03),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(color: Colors.grey.withOpacity(0.1)),
+      ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        onTap: () => Navigator.pushNamed(context, route),
-        leading: Icon(icon, color: Theme.of(context).colorScheme.secondary, size: 32),
-        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17)),
+        leading: Icon(icon, color: Theme.of(context).colorScheme.secondary.withOpacity(0.5), size: 32),
+        title: Text(
+          title, 
+          style: TextStyle(
+            fontWeight: FontWeight.w500, 
+            fontSize: 17,
+            color: Colors.grey[700],
+          )
+        ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
-          child: Text(subtitle, style: const TextStyle(fontSize: 13)),
+          child: Text(
+            subtitle, 
+            style: TextStyle(fontSize: 13, color: Colors.grey[500])
+          ),
         ),
-        trailing: const Icon(Icons.chevron_right, size: 20),
       ),
     );
   }
