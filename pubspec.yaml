@@ -30,14 +30,14 @@ dev_dependencies:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo.png"
+  image_path: "assets/images/launcher_logo.JPG"
   min_sdk_android: 21
   web:
     generate: true
-    image_path: "assets/images/logo.png"
+    image_path: "assets/images/launcher_logo.JPG"
   windows:
     generate: true
-    image_path: "assets/images/logo.png"
+    image_path: "assets/images/launcher_logo.JPG"
 
 flutter:
   uses-material-design: true
