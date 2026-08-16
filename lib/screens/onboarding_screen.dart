@@ -54,7 +54,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
           controller: _tabController,
           isScrollable: true,
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.white.withOpacity(0.6),
+          unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
           indicatorColor: Theme.of(context).colorScheme.secondary,
           tabs: const [
             Tab(text: 'General & IT', icon: Icon(Icons.business_center)),
@@ -375,7 +375,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                 Container(
                   width: 2,
                   height: 40,
-                  color: primaryColor.withOpacity(0.3),
+                  color: primaryColor.withValues(alpha: 0.3),
                 ),
             ],
           ),
@@ -390,7 +390,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               ],
             ),
           ),
-          Icon(icon, color: primaryColor.withOpacity(0.5)),
+          Icon(icon, color: primaryColor.withValues(alpha: 0.5)),
         ],
       ),
     );
@@ -400,9 +400,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.05),
+        color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Theme.of(context).colorScheme.secondary.withOpacity(0.2)),
+        border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
