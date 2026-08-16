@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/blog_post.dart';
 
 class BlogPostDetailScreen extends StatelessWidget {
@@ -7,10 +8,27 @@ class BlogPostDetailScreen extends StatelessWidget {
 
   const BlogPostDetailScreen({super.key, required this.post});
 
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Article')),
+      appBar: AppBar(
+        title: const Text('Article'),
+        actions: [
+          if (post.url != null)
+            IconButton(
+              icon: const Icon(Icons.open_in_browser),
+              onPressed: () => _launchURL(post.url!),
+              tooltip: 'Open in Browser',
+            ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
         child: Column(
@@ -55,7 +73,7 @@ class BlogPostDetailScreen extends StatelessWidget {
             ),
             const Divider(height: 64),
             Text(
-              post.content,
+              post.content.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''), // Basic HTML strip
               style: const TextStyle(
                 fontSize: 17,
                 height: 1.8,
@@ -63,6 +81,17 @@ class BlogPostDetailScreen extends StatelessWidget {
                 letterSpacing: 0.2,
               ),
             ),
+            if (post.url != null) ...[
+              const SizedBox(height: 40),
+              ElevatedButton.icon(
+                onPressed: () => _launchURL(post.url!),
+                icon: const Icon(Icons.launch),
+                label: const Text('Read full article on website'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 50),
+                ),
+              ),
+            ],
             const SizedBox(height: 60),
             Center(
               child: ElevatedButton.icon(

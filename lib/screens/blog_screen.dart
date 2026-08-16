@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../models/blog_post.dart';
-import '../services/database_service.dart';
+import '../services/blog_service.dart';
 import '../widgets/rbm_loading_indicator.dart';
 import 'blog_post_detail_screen.dart';
 
 class BlogScreen extends StatelessWidget {
   const BlogScreen({super.key});
 
+  Future<void> _launchURL(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Insights & News')),
       body: StreamBuilder<List<BlogPost>>(
-        stream: DatabaseService().streamArticles(),
+        stream: BlogService().streamAllPosts(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -58,97 +66,109 @@ class BlogScreen extends StatelessWidget {
             );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-            itemCount: posts.length,
-            itemBuilder: (context, index) {
-              final post = posts[index];
-              return Card(
-                elevation: 3,
-                margin: const EdgeInsets.only(bottom: 24),
-                shadowColor: Colors.black12,
-                clipBehavior: Clip.antiAlias,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => BlogPostDetailScreen(post: post),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFC99700).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+          return RefreshIndicator(
+            onRefresh: () async {
+              // Trigger a rebuild by forcing a new fetch
+              (context as Element).markNeedsBuild();
+            },
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              itemCount: posts.length,
+              itemBuilder: (context, index) {
+                final post = posts[index];
+                return Card(
+                  elevation: 3,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  shadowColor: Colors.black12,
+                  clipBehavior: Clip.antiAlias,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  child: InkWell(
+                    onTap: () {
+                      if (post.url != null) {
+                        _launchURL(post.url!);
+                      } else {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => BlogPostDetailScreen(post: post),
                           ),
-                          child: Text(
-                            post.category.toUpperCase(),
-                            style: const TextStyle(
-                              color: Color(0xFFC99700),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 11,
-                              letterSpacing: 1.2,
+                        );
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFC99700).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          post.title,
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontSize: 22,
-                            height: 1.3,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
-                            const SizedBox(width: 8),
-                            Text(
-                              post.date,
-                              style: const TextStyle(color: Colors.grey, fontSize: 13),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        Text(
-                          post.excerpt,
-                          style: const TextStyle(
-                            fontSize: 15, 
-                            color: Colors.black54,
-                            height: 1.6,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        Row(
-                          children: [
-                            Text(
-                              'READ ARTICLE',
-                              style: TextStyle(
-                                color: Theme.of(context).primaryColor,
+                            child: Text(
+                              post.category.toUpperCase(),
+                              style: const TextStyle(
+                                color: Color(0xFFC99700),
                                 fontWeight: FontWeight.bold,
-                                fontSize: 13,
-                                letterSpacing: 1.0,
+                                fontSize: 11,
+                                letterSpacing: 1.2,
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).primaryColor),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            post.title,
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontSize: 22,
+                              height: 1.3,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today, size: 14, color: Colors.grey),
+                              const SizedBox(width: 8),
+                              Text(
+                                post.date,
+                                style: const TextStyle(color: Colors.grey, fontSize: 13),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            post.excerpt.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''), // Strip HTML tags
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 15, 
+                              color: Colors.black54,
+                              height: 1.6,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            children: [
+                              Text(
+                                post.url != null ? 'READ ON WEBSITE' : 'READ ARTICLE',
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 13,
+                                  letterSpacing: 1.0,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).primaryColor),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         },
       ),
