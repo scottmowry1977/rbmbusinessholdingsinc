@@ -9,6 +9,13 @@ class AboutScreen extends StatelessWidget {
 
   Future<void> _launchURL(String urlString) async {
     final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
+  Future<void> _launchSocial(String urlString) async {
+    final Uri url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
     }
@@ -228,7 +235,7 @@ class AboutScreen extends StatelessWidget {
             ),
             const SizedBox(width: 16),
             _buildSocialIcon(
-              'https://twitter.com/RBMBHI',
+              'https://x.com/RBMBHI',
               Icons.alternate_email,
               'X (Twitter)',
             ),
@@ -251,7 +258,7 @@ class AboutScreen extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: IconButton(
-        onPressed: () => _launchURL(url),
+        onPressed: () => _launchSocial(url),
         icon: Icon(icon, size: 20),
         color: const Color(0xFF0C2340),
         tooltip: tooltip,

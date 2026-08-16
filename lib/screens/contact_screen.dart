@@ -12,6 +12,13 @@ class ContactScreen extends StatelessWidget {
     }
   }
 
+  Future<void> _launchSocial(String urlString) async {
+    final Uri url = Uri.parse(urlString);
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      throw Exception('Could not launch $url');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,7 +85,7 @@ class ContactScreen extends StatelessWidget {
                 _buildSocialIcon(
                   context,
                   'X (Twitter)',
-                  'https://twitter.com/RBMBHI',
+                  'https://x.com/RBMBHI',
                   Icons.alternate_email,
                 ),
                 _buildSocialIcon(
@@ -105,7 +112,7 @@ class ContactScreen extends StatelessWidget {
     return Column(
       children: [
         IconButton.filled(
-          onPressed: () => _launchURL(url),
+          onPressed: () => _launchSocial(url),
           icon: Icon(icon),
           style: IconButton.styleFrom(
             backgroundColor: Theme.of(context).primaryColor,
