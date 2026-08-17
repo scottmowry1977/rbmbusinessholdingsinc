@@ -16,7 +16,9 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   final _formKey = GlobalKey<FormState>();
   final _incomeController = TextEditingController();
   final _expensesController = TextEditingController();
+  final _salaryController = TextEditingController(text: '50000');
   
+  String _entityType = 'Sole Proprietor / 1099';
   String _filingStatus = 'Single';
   bool _isSelfEmployed = true;
   
@@ -24,9 +26,9 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   double _effectiveRate = 0;
   double _netIncome = 0;
   double _appliedDeduction = 0;
+  double _seTaxSavings = 0;
   String _currentYearText = "2026";
 
-  // 2025/2026 Brackets (Baseline Projections)
   final Map<String, List<double>> _thresholds = {
     'Single': [11925, 48475, 103350, 197300, 250525, 626350],
     'Married (Joint)': [23850, 96950, 206700, 394600, 501050, 751600],
@@ -49,8 +51,6 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         return tax;
       }
     }
-    
-    // Top bracket
     tax += (taxableIncome - previousThreshold) * _rates.last;
     return tax;
   }
@@ -59,8 +59,8 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     if (_formKey.currentState!.validate()) {
       double gross = double.tryParse(_incomeController.text) ?? 0;
       double expenses = double.tryParse(_expensesController.text) ?? 0;
-      double taxableBusinessIncome = gross - expenses;
-      if (taxableBusinessIncome < 0) taxableBusinessIncome = 0;
+      double businessProfit = gross - expenses;
+      if (businessProfit < 0) businessProfit = 0;
 
       double parseDbValue(dynamic val, double fallback) {
         if (val == null) return fallback;
@@ -69,7 +69,6 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         return fallback;
       }
       
-      // Dynamic Standard Deductions from Firebase (with fallbacks)
       double standardDeduction = parseDbValue(config['deduction_single'], 16100);
       if (_filingStatus == 'Married (Joint)') {
         standardDeduction = parseDbValue(config['deduction_joint'], 32200);
@@ -77,46 +76,73 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         standardDeduction = parseDbValue(config['deduction_hoh'], 24150);
       }
 
-      double seTax = 0;
-      if (_isSelfEmployed) {
-        seTax = taxableBusinessIncome * 0.9235 * 0.153;
-        taxableBusinessIncome -= (seTax * 0.5); // Adjustment
+      double totalTaxLiability = 0;
+      _seTaxSavings = 0;
+
+      if (_entityType == 'C-Corp') {
+        // Flat 21% Corporate Tax
+        totalTaxLiability = businessProfit * 0.21;
+      } 
+      else if (_entityType == 'S-Corp') {
+        double salary = double.tryParse(_salaryController.text) ?? (businessProfit * 0.4);
+        if (salary > businessProfit) salary = businessProfit;
+        
+        // 1. FICA on Salary (Employee + Employer approx 15.3%)
+        double ficaTax = salary * 0.153;
+        
+        // 2. Distributions (Remaining profit) - No SE Tax
+        double distributions = businessProfit - salary;
+        
+        // 3. Federal Tax on Salary + Distributions
+        double taxableIndividualIncome = (salary + distributions) - standardDeduction;
+        if (taxableIndividualIncome < 0) taxableIndividualIncome = 0;
+        double fedTax = _calculateAdvancedFederalTax(taxableIndividualIncome, _filingStatus);
+        
+        totalTaxLiability = ficaTax + fedTax;
+
+        // Calculate comparison to Sole Prop for "Savings" display
+        double solePropSeTax = businessProfit * 0.9235 * 0.153;
+        double solePropFedTax = _calculateAdvancedFederalTax((businessProfit - (solePropSeTax * 0.5)) - standardDeduction, _filingStatus);
+        _seTaxSavings = (solePropSeTax + solePropFedTax) - totalTaxLiability;
+      } 
+      else {
+        // Sole Proprietor / 1099
+        double seTax = businessProfit * 0.9235 * 0.153;
+        double adjustedTaxable = (businessProfit - (seTax * 0.5)) - standardDeduction;
+        if (adjustedTaxable < 0) adjustedTaxable = 0;
+        double fedTax = _calculateAdvancedFederalTax(adjustedTaxable, _filingStatus);
+        totalTaxLiability = seTax + fedTax;
       }
-
-      double adjustedTaxable = taxableBusinessIncome - standardDeduction;
-      if (adjustedTaxable < 0) adjustedTaxable = 0;
-
-      double federalTax = _calculateAdvancedFederalTax(adjustedTaxable, _filingStatus);
 
       setState(() {
         _appliedDeduction = standardDeduction;
-        _estimatedTax = federalTax + seTax;
-        _netIncome = (gross - expenses) - _estimatedTax;
-        _effectiveRate = (gross - expenses) > 0 ? (_estimatedTax / (gross - expenses)) * 100 : 0;
+        _estimatedTax = totalTaxLiability;
+        _netIncome = businessProfit - _estimatedTax;
+        _effectiveRate = businessProfit > 0 ? (_estimatedTax / businessProfit) * 100 : 0;
         _currentYearText = config['config_year'] ?? "2026";
       });
     }
   }
 
   Future<void> _generatePdf() async {
-    await PdfService().generateTaxReport(
-      clientName: 'Strategic Client',
-      filingStatus: _filingStatus,
-      grossIncome: double.tryParse(_incomeController.text) ?? 0,
-      expenses: double.tryParse(_expensesController.text) ?? 0,
-      deduction: _appliedDeduction,
-      estimatedTax: _estimatedTax,
-      netIncome: _netIncome,
-      effectiveRate: _effectiveRate,
-      year: _currentYearText,
-    );
-  }
-
-  @override
-  void dispose() {
-    _incomeController.dispose();
-    _expensesController.dispose();
-    super.dispose();
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Generating professional report...')));
+      await PdfService().generateTaxReport(
+        clientName: 'Strategic Business Client',
+        filingStatus: '$_entityType - $_filingStatus',
+        grossIncome: double.tryParse(_incomeController.text) ?? 0,
+        expenses: double.tryParse(_expensesController.text) ?? 0,
+        deduction: _appliedDeduction,
+        estimatedTax: _estimatedTax,
+        netIncome: _netIncome,
+        effectiveRate: _effectiveRate,
+        year: _currentYearText,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red));
+      }
+    }
   }
 
   @override
@@ -132,8 +158,6 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
           config = snapshot.data!.data() as Map<String, dynamic>;
         }
 
-        final String yearText = config['config_year'] ?? _currentYearText;
-
         return Scaffold(
           appBar: AppBar(title: const Text('Strategic Tax Estimator')),
           drawer: const AppDrawer(),
@@ -144,35 +168,23 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Plan Your Success',
-                    style: GoogleFonts.playfairDisplay(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: notreDameNavy,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Precision math based on $yearText IRS thresholds for Federal and SE tax.',
-                    style: const TextStyle(fontSize: 15, color: Colors.grey),
-                  ),
+                  Text('Business Strategy Tool', style: GoogleFonts.playfairDisplay(fontSize: 28, fontWeight: FontWeight.bold, color: notreDameNavy)),
                   const SizedBox(height: 32),
                   
                   _buildInputCard(
                     context,
-                    title: 'Business Financials',
+                    title: 'Entity Configuration',
                     children: [
-                      _buildTextField(
-                        controller: _incomeController,
-                        label: 'Annual Gross Income',
-                        icon: Icons.attach_money,
-                      ),
-                      const SizedBox(height: 20),
-                      _buildTextField(
-                        controller: _expensesController,
-                        label: 'Annual Business Expenses',
-                        icon: Icons.receipt_long_outlined,
+                      DropdownButtonFormField<String>(
+                        value: _entityType,
+                        decoration: const InputDecoration(labelText: 'Business Entity Type'),
+                        items: ['Sole Proprietor / 1099', 'S-Corp', 'C-Corp']
+                            .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                            .toList(),
+                        onChanged: (val) => setState(() {
+                          _entityType = val!;
+                          _isSelfEmployed = (_entityType == 'Sole Proprietor / 1099');
+                        }),
                       ),
                     ],
                   ),
@@ -181,7 +193,24 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                   
                   _buildInputCard(
                     context,
-                    title: 'Filing Details',
+                    title: 'Revenue & Expenses',
+                    children: [
+                      _buildTextField(controller: _incomeController, label: 'Annual Gross Income', icon: Icons.attach_money),
+                      const SizedBox(height: 16),
+                      _buildTextField(controller: _expensesController, label: 'Annual Business Expenses', icon: Icons.receipt_long),
+                      if (_entityType == 'S-Corp') ...[
+                        const SizedBox(height: 16),
+                        _buildTextField(controller: _salaryController, label: 'Owner W-2 Salary', icon: Icons.person_outline),
+                        const Text('Strategic Note: S-Corp savings rely on setting a "Reasonable Salary."', style: TextStyle(fontSize: 11, color: Colors.blueGrey)),
+                      ],
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  _buildInputCard(
+                    context,
+                    title: 'Personal Filing Status',
                     children: [
                       DropdownButtonFormField<String>(
                         value: _filingStatus,
@@ -191,26 +220,18 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                             .toList(),
                         onChanged: (val) => setState(() => _filingStatus = val!),
                       ),
-                      const SizedBox(height: 16),
-                      SwitchListTile(
-                        title: const Text('Self-Employed'),
-                        subtitle: const Text('Includes SE Tax and 1040 adjustments'),
-                        value: _isSelfEmployed,
-                        activeColor: notreDameGold,
-                        onChanged: (val) => setState(() => _isSelfEmployed = val),
-                      ),
                     ],
                   ),
 
                   const SizedBox(height: 32),
                   ElevatedButton(
                     onPressed: () => _calculateTax(config),
-                    child: const Text('Generate Advanced Estimate'),
+                    child: const Text('Calculate Strategic Liability'),
                   ),
 
                   if (_estimatedTax > 0) ...[
                     const SizedBox(height: 40),
-                    _buildResultsSection(context, yearText),
+                    _buildResultsSection(context, config['config_year'] ?? "2026"),
                     const SizedBox(height: 24),
                     OutlinedButton.icon(
                       onPressed: _generatePdf,
@@ -224,7 +245,6 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                       ),
                     ),
                   ],
-                  
                   const SizedBox(height: 40),
                   _buildDisclaimer(),
                 ],
@@ -240,20 +260,14 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     return Card(
       elevation: 0,
       color: const Color(0xFF0C2340).withValues(alpha: 0.03),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.withValues(alpha: 0.1))),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            const SizedBox(height: 20),
-            ...children,
-          ],
-        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          const SizedBox(height: 20),
+          ...children,
+        ]),
       ),
     );
   }
@@ -262,96 +276,46 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     return TextFormField(
       controller: controller,
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, size: 20),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
+      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon, size: 20), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
       validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
     );
   }
 
   Widget _buildResultsSection(BuildContext context, String year) {
-    const Color notreDameNavy = Color(0xFF0C2340);
     const Color notreDameGold = Color(0xFFC99700);
-
     return Container(
       padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(
-        color: notreDameNavy,
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(color: notreDameGold.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2),
-        ],
-      ),
-      child: Column(
-        children: [
-          Text(
-            'Estimated Total Tax Liability ($year)',
-            style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 13, letterSpacing: 1.2),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            '\$${_estimatedTax.toStringAsFixed(0)}',
-            style: GoogleFonts.playfairDisplay(
-              color: notreDameGold,
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Standard Deduction Applied: \$${_appliedDeduction.toStringAsFixed(0)}',
-            style: const TextStyle(color: Colors.white60, fontSize: 12),
-          ),
-          const Divider(color: Colors.white24, height: 40),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildResultStat('Net Take-Home', '\$${_netIncome.toStringAsFixed(0)}'),
-              _buildResultStat('Effective Rate', '${_effectiveRate.toStringAsFixed(1)}%'),
-            ],
-          ),
-          const SizedBox(height: 32),
+      decoration: BoxDecoration(color: const Color(0xFF0C2340), borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: notreDameGold.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2)]),
+      child: Column(children: [
+        Text('Estimated Total Liability ($year)', style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 13, letterSpacing: 1.2)),
+        const SizedBox(height: 8),
+        Text('\$${_estimatedTax.toStringAsFixed(0)}', style: GoogleFonts.playfairDisplay(color: notreDameGold, fontSize: 48, fontWeight: FontWeight.bold)),
+        const Divider(color: Colors.white24, height: 40),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          _buildResultStat('Net Profit', '\$${_netIncome.toStringAsFixed(0)}'),
+          _buildResultStat('Effective Rate', '${_effectiveRate.toStringAsFixed(1)}%'),
+        ]),
+        if (_seTaxSavings > 0) ...[
+          const SizedBox(height: 24),
           Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Row(
-              children: [
-                Icon(Icons.auto_awesome, color: notreDameGold, size: 20),
-                SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    'Strategic Target: Our clients often reduce this liability by 15-25% through specialized planning.',
-                    style: TextStyle(color: Colors.white, fontSize: 13, height: 1.4),
-                  ),
-                ),
-              ],
-            ),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+            child: Text('Potential SE Tax Savings: \$${_seTaxSavings.toStringAsFixed(0)}', style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         ],
-      ),
+      ]),
     );
   }
 
   Widget _buildResultStat(String label, String value) {
-    return Column(
-      children: [
-        Text(label, style: const TextStyle(color: Colors.white60, fontSize: 12)),
-        const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
-      ],
-    );
+    return Column(children: [
+      Text(label, style: const TextStyle(color: Colors.white60, fontSize: 12)),
+      const SizedBox(height: 4),
+      Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+    ]);
   }
 
   Widget _buildDisclaimer() {
-    return const Text(
-      'Disclaimer: This tool is an advanced mathematical estimation and does not constitute official tax advice. Final liability is determined by your official filing and individual circumstances.',
-      textAlign: TextAlign.center,
-      style: TextStyle(fontSize: 11, color: Colors.grey, fontStyle: FontStyle.italic),
-    );
+    return const Text('Disclaimer: This is a high-level strategic estimation and not official tax advice.', textAlign: TextAlign.center, style: TextStyle(fontSize: 11, color: Colors.grey, fontStyle: FontStyle.italic));
   }
 }

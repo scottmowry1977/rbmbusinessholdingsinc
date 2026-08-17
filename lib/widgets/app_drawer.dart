@@ -76,6 +76,12 @@ class AppDrawer extends StatelessWidget {
                 ),
                 _buildDrawerItem(
                   context,
+                  icon: Icons.support_agent_outlined,
+                  title: 'Submit IT Ticket',
+                  route: '/it-ticket',
+                ),
+                _buildDrawerItem(
+                  context,
                   icon: Icons.trending_up_outlined,
                   title: 'Business Strategy',
                   route: '/business',
