@@ -80,6 +80,12 @@ class AppDrawer extends StatelessWidget {
                   title: 'Business Strategy',
                   route: '/business',
                 ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.calculate_outlined,
+                  title: 'Strategic Tax Estimator',
+                  route: '/tax-estimator',
+                ),
                 const Divider(),
                 _buildDrawerItem(
                   context,
