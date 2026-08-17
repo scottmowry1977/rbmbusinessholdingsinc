@@ -103,9 +103,9 @@ class PdfService {
               pw.SizedBox(height: 40),
               pw.Text('Strategic Insights', style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold, color: notreDameNavy)),
               pw.SizedBox(height: 10),
+              pw.Bullet(text: 'Calculated using projected 2026 Social Security Wage Base thresholds.'),
               pw.Bullet(text: 'RBM clients often see 15-25% reduction in these figures through advanced planning.'),
-              pw.Bullet(text: 'This estimate accounts for both Federal Income Tax and Self-Employment Tax thresholds.'),
-              pw.Bullet(text: 'Ensure all business deductions are properly categorized for maximum efficiency.'),
+              pw.Bullet(text: 'Strategic adjustments (401k/SEP) directly reduce your individual federal taxable liability.'),
 
               pw.Spacer(),
               pw.Divider(color: notreDameNavy),
