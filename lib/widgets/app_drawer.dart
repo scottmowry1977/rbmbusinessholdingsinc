@@ -62,6 +62,7 @@ class AppDrawer extends StatelessWidget {
                   route: '/',
                 ),
                 const Divider(),
+                _buildSectionHeader('Professional Services'),
                 _buildDrawerItem(
                   context,
                   icon: Icons.account_balance_outlined,
@@ -81,6 +82,7 @@ class AppDrawer extends StatelessWidget {
                   route: '/business',
                 ),
                 const Divider(),
+                _buildSectionHeader('Interactive Tools'),
                 _buildDrawerItem(
                   context,
                   icon: Icons.support_agent_outlined,
@@ -94,6 +96,7 @@ class AppDrawer extends StatelessWidget {
                   route: '/tax-estimator',
                 ),
                 const Divider(),
+                _buildSectionHeader('Strategic Resources'),
                 _buildDrawerItem(
                   context,
                   icon: Icons.article_outlined,
@@ -107,6 +110,7 @@ class AppDrawer extends StatelessWidget {
                   route: '/onboarding',
                 ),
                 const Divider(),
+                _buildSectionHeader('Company'),
                 _buildDrawerItem(
                   context,
                   icon: Icons.info_outline,
@@ -130,6 +134,21 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, top: 16, bottom: 8),
+      child: Text(
+        title.toUpperCase(),
+        style: const TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFFC99700), // Notre Dame Gold
+          letterSpacing: 1.2,
+        ),
       ),
     );
   }
