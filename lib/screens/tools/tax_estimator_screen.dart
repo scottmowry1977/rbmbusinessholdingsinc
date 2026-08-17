@@ -29,12 +29,12 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       double taxableBusinessIncome = gross - expenses;
       if (taxableBusinessIncome < 0) taxableBusinessIncome = 0;
       
-      // 2024 Standard Deductions
-      double standardDeduction = 14600; // Default: Single
+      // 2025 Standard Deductions
+      double standardDeduction = 15750; // Default: Single
       if (_filingStatus == 'Married (Joint)') {
-        standardDeduction = 29200;
+        standardDeduction = 31500;
       } else if (_filingStatus == 'Head of Household') {
-        standardDeduction = 21900;
+        standardDeduction = 23625;
       }
 
       // Simplified 2024/2025 estimation logic
@@ -107,7 +107,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Estimate your tax liability based on 2024 standard deductions and discover strategic targets for savings.',
+                'Estimate your tax liability based on 2025 standard deductions and discover strategic targets for savings.',
                 style: TextStyle(fontSize: 15, color: Colors.grey),
               ),
               const SizedBox(height: 32),
