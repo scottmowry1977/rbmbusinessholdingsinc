@@ -18,4 +18,9 @@ class DatabaseService {
   Future<void> addArticle(Map<String, dynamic> data) async {
     await _db.collection('articles').add(data);
   }
+
+  // Stream of tax settings
+  Stream<DocumentSnapshot> streamTaxSettings() {
+    return _db.collection('settings').doc('tax_config').snapshots();
+  }
 }

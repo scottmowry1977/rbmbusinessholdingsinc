@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../widgets/app_drawer.dart';
+import '../../services/database_service.dart';
 
 class TaxEstimatorScreen extends StatefulWidget {
   const TaxEstimatorScreen({super.key});
@@ -22,22 +24,28 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   double _netIncome = 0;
   double _appliedDeduction = 0;
 
-  void _calculateTax() {
+  // 2026 Projections (Fallback)
+  double fallbackSingle = 16100;
+  double fallbackJoint = 32200;
+  double fallbackHoh = 24150;
+  String currentYear = "2026";
+
+  void _calculateTax(Map<String, dynamic> config) {
     if (_formKey.currentState!.validate()) {
       double gross = double.tryParse(_incomeController.text) ?? 0;
       double expenses = double.tryParse(_expensesController.text) ?? 0;
       double taxableBusinessIncome = gross - expenses;
       if (taxableBusinessIncome < 0) taxableBusinessIncome = 0;
       
-      // 2025 Standard Deductions
-      double standardDeduction = 15750; // Default: Single
+      // Dynamic Standard Deductions from Firebase (with fallbacks)
+      double standardDeduction = (config['deduction_single'] ?? fallbackSingle).toDouble();
       if (_filingStatus == 'Married (Joint)') {
-        standardDeduction = 31500;
+        standardDeduction = (config['deduction_joint'] ?? fallbackJoint).toDouble();
       } else if (_filingStatus == 'Head of Household') {
-        standardDeduction = 23625;
+        standardDeduction = (config['deduction_hoh'] ?? fallbackHoh).toDouble();
       }
 
-      // Simplified 2024/2025 estimation logic
+      // Simplified estimation logic
       double federalTax = 0;
       double seTax = 0;
 
@@ -53,9 +61,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       double adjustedTaxable = taxableBusinessIncome - standardDeduction;
       if (adjustedTaxable < 0) adjustedTaxable = 0;
 
-      // 2024 Federal Tax Brackets (Simplified for Single, adjusted slightly for Joint/HoH in a real app)
-      // Note: In a production app, we would use separate maps for each status. 
-      // For this "Strategic Estimator," we use these as the baseline:
+      // 2024 Federal Tax Brackets (Used as strategic baseline)
       if (adjustedTaxable <= 11600) {
         federalTax = adjustedTaxable * 0.10;
       } else if (adjustedTaxable <= 47150) {
@@ -71,6 +77,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         _estimatedTax = federalTax + seTax;
         _netIncome = (gross - expenses) - _estimatedTax;
         _effectiveRate = (gross - expenses) > 0 ? (_estimatedTax / (gross - expenses)) * 100 : 0;
+        currentYear = config['config_year'] ?? "2026";
       });
     }
   }
@@ -87,108 +94,121 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     const Color notreDameNavy = Color(0xFF0C2340);
     const Color notreDameGold = Color(0xFFC99700);
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Strategic Tax Estimator')),
-      drawer: const AppDrawer(),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Plan Your Success',
-                style: GoogleFonts.playfairDisplay(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: notreDameNavy,
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Estimate your tax liability based on 2025 standard deductions and discover strategic targets for savings.',
-                style: TextStyle(fontSize: 15, color: Colors.grey),
-              ),
-              const SizedBox(height: 32),
-              
-              _buildInputCard(
-                context,
-                title: 'Business Financials',
+    return StreamBuilder<DocumentSnapshot>(
+      stream: DatabaseService().streamTaxSettings(),
+      builder: (context, snapshot) {
+        // Prepare the config map
+        Map<String, dynamic> config = {};
+        if (snapshot.hasData && snapshot.data!.exists) {
+          config = snapshot.data!.data() as Map<String, dynamic>;
+        }
+
+        final String yearText = config['config_year'] ?? currentYear;
+
+        return Scaffold(
+          appBar: AppBar(title: const Text('Strategic Tax Estimator')),
+          drawer: const AppDrawer(),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(24.0),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _buildTextField(
-                    controller: _incomeController,
-                    label: 'Expected Annual Gross Income',
-                    icon: Icons.attach_money,
-                  ),
-                  const SizedBox(height: 20),
-                  _buildTextField(
-                    controller: _expensesController,
-                    label: 'Estimated Business Expenses',
-                    icon: Icons.receipt_long_outlined,
-                  ),
-                ],
-              ),
-              
-              const SizedBox(height: 24),
-              
-              _buildInputCard(
-                context,
-                title: 'Filing Details',
-                children: [
-                  DropdownButtonFormField<String>(
-                    value: _filingStatus,
-                    decoration: const InputDecoration(
-                      labelText: 'Filing Status',
-                      helperText: 'Used to apply correct Standard Deduction',
+                  Text(
+                    'Plan Your Success',
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: notreDameNavy,
                     ),
-                    items: ['Single', 'Married (Joint)', 'Head of Household']
-                        .map((s) => DropdownMenuItem(value: s, child: Text(s)))
-                        .toList(),
-                    onChanged: (val) => setState(() => _filingStatus = val!),
                   ),
-                  const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: const Text('Self-Employed / Independent Contractor'),
-                    subtitle: const Text('Calculates SE Tax and 50% adjustment'),
-                    value: _isSelfEmployed,
-                    activeColor: notreDameGold,
-                    onChanged: (val) => setState(() => _isSelfEmployed = val),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Estimate your tax liability based on $yearText standard deductions and discover strategic targets for savings.',
+                    style: const TextStyle(fontSize: 15, color: Colors.grey),
                   ),
+                  const SizedBox(height: 32),
+                  
+                  _buildInputCard(
+                    context,
+                    title: 'Business Financials',
+                    children: [
+                      _buildTextField(
+                        controller: _incomeController,
+                        label: 'Expected Annual Gross Income',
+                        icon: Icons.attach_money,
+                      ),
+                      const SizedBox(height: 20),
+                      _buildTextField(
+                        controller: _expensesController,
+                        label: 'Estimated Business Expenses',
+                        icon: Icons.receipt_long_outlined,
+                      ),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  _buildInputCard(
+                    context,
+                    title: 'Filing Details',
+                    children: [
+                      DropdownButtonFormField<String>(
+                        value: _filingStatus,
+                        decoration: const InputDecoration(
+                          labelText: 'Filing Status',
+                          helperText: 'Used to apply correct Standard Deduction',
+                        ),
+                        items: ['Single', 'Married (Joint)', 'Head of Household']
+                            .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                            .toList(),
+                        onChanged: (val) => setState(() => _filingStatus = val!),
+                      ),
+                      const SizedBox(height: 16),
+                      SwitchListTile(
+                        title: const Text('Self-Employed / Independent Contractor'),
+                        subtitle: const Text('Calculates SE Tax and 50% adjustment'),
+                        value: _isSelfEmployed,
+                        activeColor: notreDameGold,
+                        onChanged: (val) => setState(() => _isSelfEmployed = val),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 32),
+                  ElevatedButton(
+                    onPressed: () => _calculateTax(config),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: notreDameNavy,
+                      minimumSize: const Size(double.infinity, 56),
+                    ),
+                    child: const Text('Calculate Estimate'),
+                  ),
+
+                  if (_estimatedTax > 0) ...[
+                    const SizedBox(height: 40),
+                    _buildResultsSection(context, yearText),
+                  ],
+                  
+                  const SizedBox(height: 40),
+                  _buildDisclaimer(),
                 ],
               ),
-
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _calculateTax,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: notreDameNavy,
-                  minimumSize: const Size(double.infinity, 56),
-                ),
-                child: const Text('Calculate Estimate'),
-              ),
-
-              if (_estimatedTax > 0) ...[
-                const SizedBox(height: 40),
-                _buildResultsSection(context),
-              ],
-              
-              const SizedBox(height: 40),
-              _buildDisclaimer(),
-            ],
+            ),
           ),
-        ),
-      ),
+        );
+      }
     );
   }
 
   Widget _buildInputCard(BuildContext context, {required String title, required List<Widget> children}) {
     return Card(
       elevation: 0,
-      color: const Color(0xFF0C2340).withOpacity(0.03),
+      color: const Color(0xFF0C2340).withValues(alpha: 0.03),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        side: BorderSide(color: Colors.grey.withOpacity(0.1)),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -217,7 +237,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     );
   }
 
-  Widget _buildResultsSection(BuildContext context) {
+  Widget _buildResultsSection(BuildContext context, String year) {
     const Color notreDameNavy = Color(0xFF0C2340);
     const Color notreDameGold = Color(0xFFC99700);
 
@@ -227,13 +247,13 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         color: notreDameNavy,
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: notreDameGold.withOpacity(0.2), blurRadius: 20, spreadRadius: 2),
+          BoxShadow(color: notreDameGold.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2),
         ],
       ),
       child: Column(
         children: [
           Text(
-            'Estimated Total Tax',
+            'Estimated Total Tax ($year)',
             style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 14, letterSpacing: 1.2),
           ),
           const SizedBox(height: 8),
@@ -262,7 +282,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Row(
