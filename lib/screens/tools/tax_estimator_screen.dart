@@ -17,6 +17,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   final _incomeController = TextEditingController();
   final _expensesController = TextEditingController();
   final _salaryController = TextEditingController(text: '50000');
+  final _childrenController = TextEditingController(text: '0');
   
   String _entityType = 'Sole Proprietor / 1099';
   String _filingStatus = 'Single';
@@ -27,6 +28,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   double _netIncome = 0;
   double _appliedDeduction = 0;
   double _seTaxSavings = 0;
+  double _appliedCtc = 0;
   String _currentYearText = "2026";
 
   final Map<String, List<double>> _thresholds = {
@@ -77,41 +79,61 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       }
 
       double totalTaxLiability = 0;
+      double fedTax = 0;
+      double payrollTax = 0;
       _seTaxSavings = 0;
+      _appliedCtc = 0;
 
       if (_entityType == 'C-Corp') {
-        // Flat 21% Corporate Tax
         totalTaxLiability = businessProfit * 0.21;
       } 
       else if (_entityType == 'S-Corp') {
         double salary = double.tryParse(_salaryController.text) ?? (businessProfit * 0.4);
         if (salary > businessProfit) salary = businessProfit;
-        
-        // 1. FICA on Salary (Employee + Employer approx 15.3%)
-        double ficaTax = salary * 0.153;
-        
-        // 2. Distributions (Remaining profit) - No SE Tax
-        double distributions = businessProfit - salary;
-        
-        // 3. Federal Tax on Salary + Distributions
-        double taxableIndividualIncome = (salary + distributions) - standardDeduction;
+        payrollTax = salary * 0.153;
+        double taxableIndividualIncome = businessProfit - standardDeduction;
         if (taxableIndividualIncome < 0) taxableIndividualIncome = 0;
-        double fedTax = _calculateAdvancedFederalTax(taxableIndividualIncome, _filingStatus);
+        fedTax = _calculateAdvancedFederalTax(taxableIndividualIncome, _filingStatus);
         
-        totalTaxLiability = ficaTax + fedTax;
-
-        // Calculate comparison to Sole Prop for "Savings" display
+        // S-Corp savings comparison
         double solePropSeTax = businessProfit * 0.9235 * 0.153;
         double solePropFedTax = _calculateAdvancedFederalTax((businessProfit - (solePropSeTax * 0.5)) - standardDeduction, _filingStatus);
-        _seTaxSavings = (solePropSeTax + solePropFedTax) - totalTaxLiability;
+        _seTaxSavings = (solePropSeTax + solePropFedTax) - (payrollTax + fedTax);
       } 
       else {
-        // Sole Proprietor / 1099
-        double seTax = businessProfit * 0.9235 * 0.153;
-        double adjustedTaxable = (businessProfit - (seTax * 0.5)) - standardDeduction;
+        payrollTax = businessProfit * 0.9235 * 0.153; // SE Tax
+        double adjustedTaxable = (businessProfit - (payrollTax * 0.5)) - standardDeduction;
         if (adjustedTaxable < 0) adjustedTaxable = 0;
-        double fedTax = _calculateAdvancedFederalTax(adjustedTaxable, _filingStatus);
-        totalTaxLiability = seTax + fedTax;
+        fedTax = _calculateAdvancedFederalTax(adjustedTaxable, _filingStatus);
+      }
+
+      // Child Tax Credit Logic (Applies to individual fed tax only)
+      if (_entityType != 'C-Corp') {
+        int numChildren = int.tryParse(_childrenController.text) ?? 0;
+        if (numChildren > 0) {
+          double maxCtc = numChildren * 2000.0;
+          double phaseOutThreshold = (_filingStatus == 'Married (Joint)') ? 400000 : 200000;
+          double agi = businessProfit; 
+          
+          double ctc = maxCtc;
+          if (agi > phaseOutThreshold) {
+            double excess = agi - phaseOutThreshold;
+            ctc = maxCtc - ((excess / 1000).ceil() * 50.0);
+            if (ctc < 0) ctc = 0;
+          }
+          
+          if (ctc > fedTax) {
+            _appliedCtc = fedTax;
+            fedTax = 0;
+          } else {
+            _appliedCtc = ctc;
+            fedTax -= ctc;
+          }
+        }
+      }
+
+      if (_entityType != 'C-Corp') {
+        totalTaxLiability = fedTax + payrollTax;
       }
 
       setState(() {
@@ -137,6 +159,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         netIncome: _netIncome,
         effectiveRate: _effectiveRate,
         year: _currentYearText,
+        childTaxCredit: _appliedCtc,
       );
     } catch (e) {
       if (mounted) {
@@ -210,7 +233,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                   
                   _buildInputCard(
                     context,
-                    title: 'Personal Filing Status',
+                    title: 'Filing & Family Status',
                     children: [
                       DropdownButtonFormField<String>(
                         value: _filingStatus,
@@ -220,6 +243,13 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                             .toList(),
                         onChanged: (val) => setState(() => _filingStatus = val!),
                       ),
+                      const SizedBox(height: 16),
+                      _buildTextField(
+                        controller: _childrenController, 
+                        label: 'Number of Qualifying Children', 
+                        icon: Icons.child_care,
+                      ),
+                      const Text('IRS Child Tax Credit: $2,000 per qualifying child (Subject to phase-out).', style: TextStyle(fontSize: 11, color: Colors.blueGrey)),
                     ],
                   ),
 
@@ -290,6 +320,10 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         Text('Estimated Total Liability ($year)', style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 13, letterSpacing: 1.2)),
         const SizedBox(height: 8),
         Text('\$${_estimatedTax.toStringAsFixed(0)}', style: GoogleFonts.playfairDisplay(color: notreDameGold, fontSize: 48, fontWeight: FontWeight.bold)),
+        if (_appliedCtc > 0) ...[
+          const SizedBox(height: 4),
+          Text('Includes \$${_appliedCtc.toStringAsFixed(0)} Child Tax Credit', style: const TextStyle(color: Colors.white60, fontSize: 12)),
+        ],
         const Divider(color: Colors.white24, height: 40),
         Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           _buildResultStat('Net Profit', '\$${_netIncome.toStringAsFixed(0)}'),
