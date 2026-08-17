@@ -18,6 +18,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   final _expensesController = TextEditingController();
   final _salaryController = TextEditingController(text: '50000');
   final _childrenController = TextEditingController(text: '0');
+  final _otherDependentsController = TextEditingController(text: '0');
   final _adjustmentsController = TextEditingController(text: '0');
   
   String _entityType = 'Sole Proprietor / 1099';
@@ -30,7 +31,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   double _netIncome = 0;
   double _appliedDeduction = 0;
   double _seTaxSavings = 0;
-  double _appliedCtc = 0;
+  double _appliedDependentCredits = 0;
   String _currentYearText = "2026";
 
   // 2026 Federal Brackets (Baseline)
@@ -85,7 +86,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       double fedTax = 0;
       double ficaTax = 0;
       _seTaxSavings = 0;
-      _appliedCtc = 0;
+      _appliedDependentCredits = 0;
 
       // 2026 FICA/SE Math
       const double ssWageBase = 184500;
@@ -96,7 +97,6 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         fedTax = businessProfit * 0.21;
       } 
       else if (_entityType == 'Individual') {
-        // Individual W-2 / Personal Logic
         double ssPart = (gross > ssWageBase ? ssWageBase : gross) * 0.062;
         double medPart = gross * 0.0145;
         ficaTax = ssPart + medPart;
@@ -109,17 +109,14 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         double salary = double.tryParse(_salaryController.text) ?? (businessProfit * 0.4);
         if (salary > businessProfit) salary = businessProfit;
         
-        // 1. FICA on Salary (Employer + Employee)
         double ssPart = (salary > ssWageBase ? ssWageBase : salary) * ssRate;
         double medPart = salary * medicareRate;
         ficaTax = ssPart + medPart;
         
-        // 2. Individual pass-through tax
         double taxableIndividualIncome = businessProfit - standardDeduction - adjustments;
         if (taxableIndividualIncome < 0) taxableIndividualIncome = 0;
         fedTax = _calculateAdvancedFederalTax(taxableIndividualIncome, _filingStatus);
         
-        // Savings comparison
         double spProfitForSe = businessProfit * 0.9235;
         double spSs = (spProfitForSe > ssWageBase ? ssWageBase : spProfitForSe) * ssRate;
         double spMed = spProfitForSe * medicareRate;
@@ -128,7 +125,6 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         _seTaxSavings = (spSeTotal + spFed) - (ficaTax + fedTax);
       } 
       else {
-        // Sole Prop / 1099
         double profitForSe = businessProfit * 0.9235;
         double ssPart = (profitForSe > ssWageBase ? ssWageBase : profitForSe) * ssRate;
         double medPart = profitForSe * medicareRate;
@@ -139,26 +135,29 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         fedTax = _calculateAdvancedFederalTax(adjustedTaxable, _filingStatus);
       }
 
-      // Child Tax Credit (Individual and Sole Prop/S-Corp)
+      // Dependent Credits Logic (Individual and Pass-Through)
       if (_entityType != 'C-Corp') {
-        int numChildren = int.tryParse(_childrenController.text) ?? 0;
-        if (numChildren > 0) {
-          double maxCtc = numChildren * 2000.0;
+        int numQualifyingChildren = int.tryParse(_childrenController.text) ?? 0;
+        int numOtherDependents = int.tryParse(_otherDependentsController.text) ?? 0;
+        
+        if (numQualifyingChildren > 0 || numOtherDependents > 0) {
+          double maxCredits = (numQualifyingChildren * 2000.0) + (numOtherDependents * 500.0);
           double phaseOutThreshold = (_filingStatus == 'Married (Joint)') ? 400000 : 200000;
           double incomeForPhaseOut = (_entityType == 'Individual') ? gross : businessProfit;
           
-          double ctc = maxCtc;
+          double credit = maxCredits;
           if (incomeForPhaseOut > phaseOutThreshold) {
             double excess = incomeForPhaseOut - phaseOutThreshold;
-            ctc = maxCtc - ((excess / 1000).ceil() * 50.0);
-            if (ctc < 0) ctc = 0;
+            credit = maxCredits - ((excess / 1000).ceil() * 50.0);
+            if (credit < 0) credit = 0;
           }
-          if (ctc > fedTax) {
-            _appliedCtc = fedTax;
+          
+          if (credit > fedTax) {
+            _appliedDependentCredits = fedTax;
             fedTax = 0;
           } else {
-            _appliedCtc = ctc;
-            fedTax -= ctc;
+            _appliedDependentCredits = credit;
+            fedTax -= credit;
           }
         }
       }
@@ -189,7 +188,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         netIncome: _netIncome,
         effectiveRate: _effectiveRate,
         year: _currentYearText,
-        childTaxCredit: _appliedCtc,
+        childTaxCredit: _appliedDependentCredits,
       );
     } catch (e) {
       if (mounted) {
@@ -204,6 +203,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     _expensesController.dispose();
     _salaryController.dispose();
     _childrenController.dispose();
+    _otherDependentsController.dispose();
     _adjustmentsController.dispose();
     super.dispose();
   }
@@ -292,10 +292,28 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                         onChanged: (val) => setState(() => _filingStatus = val!),
                       ),
                       const SizedBox(height: 16),
-                      _buildTextField(
-                        controller: _childrenController, 
-                        label: 'Number of Qualifying Children', 
-                        icon: Icons.child_care,
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _childrenController, 
+                              label: 'Qualifying Children', 
+                              icon: Icons.child_care,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildTextField(
+                              controller: _otherDependentsController, 
+                              label: 'Other Dependents', 
+                              icon: Icons.people_outline,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 12.0),
+                        child: Text('IRS Credits: \$2,000 per child | \$500 per other dependent.', style: TextStyle(fontSize: 11, color: Colors.blueGrey)),
                       ),
                     ],
                   ),
@@ -379,7 +397,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         
         _buildStatRow('Fed Income Tax (Net)', '\$${_fedTaxPart.toStringAsFixed(0)}'),
         _buildStatRow('FICA / SE Tax', '\$${_ficaTaxPart.toStringAsFixed(0)}'),
-        if (_appliedCtc > 0) _buildStatRow('Child Tax Credit', '-\$${_appliedCtc.toStringAsFixed(0)}', color: Colors.greenAccent),
+        if (_appliedDependentCredits > 0) _buildStatRow('Dependent Credits', '-\$${_appliedDependentCredits.toStringAsFixed(0)}', color: Colors.greenAccent),
         
         const Divider(color: Colors.white24, height: 40),
         
