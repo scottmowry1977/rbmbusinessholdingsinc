@@ -169,7 +169,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       color: const Color(0xFF0C2340).withOpacity(0.03),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.withOpacity(0.1)),
+        side: BorderSide(color: Colors.grey.withOpacity(0.1)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
