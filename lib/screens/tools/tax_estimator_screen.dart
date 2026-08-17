@@ -249,7 +249,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                         label: 'Number of Qualifying Children', 
                         icon: Icons.child_care,
                       ),
-                      const Text('IRS Child Tax Credit: $2,000 per qualifying child (Subject to phase-out).', style: TextStyle(fontSize: 11, color: Colors.blueGrey)),
+                      const Text('IRS Child Tax Credit: \$2,000 per qualifying child (Subject to phase-out).', style: TextStyle(fontSize: 11, color: Colors.blueGrey)),
                     ],
                   ),
 
