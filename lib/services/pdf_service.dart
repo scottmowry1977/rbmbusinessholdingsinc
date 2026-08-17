@@ -5,8 +5,8 @@ import 'package:printing/printing.dart';
 import 'package:intl/intl.dart';
 
 class PdfService {
-  static const Color notreDameNavy = PdfColor.fromInt(0xFF0C2340);
-  static const Color notreDameGold = PdfColor.fromInt(0xFFC99700);
+  static const PdfColor notreDameNavy = PdfColor.fromInt(0xFF0C2340);
+  static const PdfColor notreDameGold = PdfColor.fromInt(0xFFC99700);
 
   Future<void> generateTaxReport({
     required String clientName,
