@@ -95,6 +95,16 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       if (_entityType == 'C-Corp') {
         fedTax = businessProfit * 0.21;
       } 
+      else if (_entityType == 'Individual') {
+        // Individual W-2 / Personal Logic
+        double ssPart = (gross > ssWageBase ? ssWageBase : gross) * 0.062;
+        double medPart = gross * 0.0145;
+        ficaTax = ssPart + medPart;
+        
+        double taxableIndividualIncome = gross - standardDeduction - adjustments;
+        if (taxableIndividualIncome < 0) taxableIndividualIncome = 0;
+        fedTax = _calculateAdvancedFederalTax(taxableIndividualIncome, _filingStatus);
+      }
       else if (_entityType == 'S-Corp') {
         double salary = double.tryParse(_salaryController.text) ?? (businessProfit * 0.4);
         if (salary > businessProfit) salary = businessProfit;
@@ -129,15 +139,18 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         fedTax = _calculateAdvancedFederalTax(adjustedTaxable, _filingStatus);
       }
 
-      // Child Tax Credit (Individual only)
+      // Child Tax Credit (Individual and Sole Prop/S-Corp)
       if (_entityType != 'C-Corp') {
         int numChildren = int.tryParse(_childrenController.text) ?? 0;
         if (numChildren > 0) {
           double maxCtc = numChildren * 2000.0;
           double phaseOutThreshold = (_filingStatus == 'Married (Joint)') ? 400000 : 200000;
+          double incomeForPhaseOut = (_entityType == 'Individual') ? gross : businessProfit;
+          
           double ctc = maxCtc;
-          if (businessProfit > phaseOutThreshold) {
-            ctc = maxCtc - ((businessProfit - phaseOutThreshold) / 1000).ceil() * 50.0;
+          if (incomeForPhaseOut > phaseOutThreshold) {
+            double excess = incomeForPhaseOut - phaseOutThreshold;
+            ctc = maxCtc - ((excess / 1000).ceil() * 50.0);
             if (ctc < 0) ctc = 0;
           }
           if (ctc > fedTax) {
@@ -155,8 +168,9 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         _fedTaxPart = fedTax;
         _ficaTaxPart = ficaTax;
         _estimatedTotalTax = fedTax + ficaTax;
-        _netIncome = businessProfit - _estimatedTotalTax;
-        _effectiveRate = businessProfit > 0 ? (_estimatedTotalTax / businessProfit) * 100 : 0;
+        _netIncome = ((_entityType == 'Individual' ? gross : businessProfit)) - _estimatedTotalTax;
+        _effectiveRate = (_entityType == 'Individual' ? gross : businessProfit) > 0 
+            ? (_estimatedTotalTax / (_entityType == 'Individual' ? gross : businessProfit)) * 100 : 0;
         _currentYearText = config['config_year'] ?? "2026";
       });
     }
@@ -227,11 +241,14 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                       DropdownButtonFormField<String>(
                         value: _entityType,
                         decoration: const InputDecoration(labelText: 'Business Entity Type'),
-                        items: ['Sole Proprietor / 1099', 'S-Corp', 'C-Corp']
+                        items: ['Individual', 'Sole Proprietor / 1099', 'S-Corp', 'C-Corp']
                             .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                             .toList(),
                         onChanged: (val) => setState(() {
                           _entityType = val!;
+                          if (_entityType == 'Individual') {
+                            _expensesController.text = '0';
+                          }
                         }),
                       ),
                     ],
@@ -245,7 +262,12 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                     children: [
                       _buildTextField(controller: _incomeController, label: 'Annual Gross Income', icon: Icons.attach_money),
                       const SizedBox(height: 16),
-                      _buildTextField(controller: _expensesController, label: 'Annual Business Expenses', icon: Icons.receipt_long),
+                      _buildTextField(
+                        controller: _expensesController, 
+                        label: 'Annual Business Expenses', 
+                        icon: Icons.receipt_long,
+                        enabled: _entityType != 'Individual',
+                      ),
                       const SizedBox(height: 16),
                       _buildTextField(controller: _adjustmentsController, label: 'Strategic Adjustments (401k/SEP/Health)', icon: Icons.savings_outlined),
                       if (_entityType == 'S-Corp') ...[
@@ -327,11 +349,18 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     );
   }
 
-  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon}) {
+  Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon, bool enabled = true}) {
     return TextFormField(
       controller: controller,
+      enabled: enabled,
       keyboardType: TextInputType.number,
-      decoration: InputDecoration(labelText: label, prefixIcon: Icon(icon, size: 20), border: OutlineInputBorder(borderRadius: BorderRadius.circular(12))),
+      decoration: InputDecoration(
+        labelText: label, 
+        prefixIcon: Icon(icon, size: 20), 
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        fillColor: enabled ? null : Colors.grey.withValues(alpha: 0.1),
+        filled: !enabled,
+      ),
       validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
     );
   }
