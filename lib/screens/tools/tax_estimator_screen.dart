@@ -20,27 +20,42 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   double _estimatedTax = 0;
   double _effectiveRate = 0;
   double _netIncome = 0;
+  double _appliedDeduction = 0;
 
   void _calculateTax() {
     if (_formKey.currentState!.validate()) {
       double gross = double.tryParse(_incomeController.text) ?? 0;
       double expenses = double.tryParse(_expensesController.text) ?? 0;
-      double taxableIncome = gross - expenses;
+      double taxableBusinessIncome = gross - expenses;
+      if (taxableBusinessIncome < 0) taxableBusinessIncome = 0;
       
+      // 2024 Standard Deductions
+      double standardDeduction = 14600; // Default: Single
+      if (_filingStatus == 'Married (Joint)') {
+        standardDeduction = 29200;
+      } else if (_filingStatus == 'Head of Household') {
+        standardDeduction = 21900;
+      }
+
       // Simplified 2024/2025 estimation logic
       double federalTax = 0;
       double seTax = 0;
 
       if (_isSelfEmployed) {
         // SE Tax is approx 15.3% on 92.35% of net profit
-        seTax = taxableIncome * 0.9235 * 0.153;
+        seTax = taxableBusinessIncome * 0.9235 * 0.153;
+        
+        // Deduct 1/2 of SE Tax from taxable income (standard 1040 adjustment)
+        taxableBusinessIncome -= (seTax * 0.5);
       }
 
-      // Simplified Federal Brackets for estimation
-      // Adjusted for Standard Deduction (Single: $14,600 approx)
-      double adjustedTaxable = taxableIncome - 14600;
+      // Apply Standard Deduction
+      double adjustedTaxable = taxableBusinessIncome - standardDeduction;
       if (adjustedTaxable < 0) adjustedTaxable = 0;
 
+      // 2024 Federal Tax Brackets (Simplified for Single, adjusted slightly for Joint/HoH in a real app)
+      // Note: In a production app, we would use separate maps for each status. 
+      // For this "Strategic Estimator," we use these as the baseline:
       if (adjustedTaxable <= 11600) {
         federalTax = adjustedTaxable * 0.10;
       } else if (adjustedTaxable <= 47150) {
@@ -52,9 +67,10 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       }
 
       setState(() {
+        _appliedDeduction = standardDeduction;
         _estimatedTax = federalTax + seTax;
-        _netIncome = taxableIncome - _estimatedTax;
-        _effectiveRate = taxableIncome > 0 ? (_estimatedTax / taxableIncome) * 100 : 0;
+        _netIncome = (gross - expenses) - _estimatedTax;
+        _effectiveRate = (gross - expenses) > 0 ? (_estimatedTax / (gross - expenses)) * 100 : 0;
       });
     }
   }
@@ -91,7 +107,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                'Estimate your tax liability and discover strategic targets for savings.',
+                'Estimate your tax liability based on 2024 standard deductions and discover strategic targets for savings.',
                 style: TextStyle(fontSize: 15, color: Colors.grey),
               ),
               const SizedBox(height: 32),
@@ -122,7 +138,10 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                 children: [
                   DropdownButtonFormField<String>(
                     value: _filingStatus,
-                    decoration: const InputDecoration(labelText: 'Filing Status'),
+                    decoration: const InputDecoration(
+                      labelText: 'Filing Status',
+                      helperText: 'Used to apply correct Standard Deduction',
+                    ),
                     items: ['Single', 'Married (Joint)', 'Head of Household']
                         .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                         .toList(),
@@ -131,7 +150,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                   const SizedBox(height: 16),
                   SwitchListTile(
                     title: const Text('Self-Employed / Independent Contractor'),
-                    subtitle: const Text('Calculates estimated SE Tax liability'),
+                    subtitle: const Text('Calculates SE Tax and 50% adjustment'),
                     value: _isSelfEmployed,
                     activeColor: notreDameGold,
                     onChanged: (val) => setState(() => _isSelfEmployed = val),
@@ -226,11 +245,16 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(height: 8),
+          Text(
+            'Applied Standard Deduction: \$${_appliedDeduction.toStringAsFixed(0)}',
+            style: const TextStyle(color: Colors.white60, fontSize: 12),
+          ),
           const Divider(color: Colors.white24, height: 40),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildResultStat('Net Income', '\$${_netIncome.toStringAsFixed(0)}'),
+              _buildResultStat('Net Take-Home', '\$${_netIncome.toStringAsFixed(0)}'),
               _buildResultStat('Effective Rate', '${_effectiveRate.toStringAsFixed(1)}%'),
             ],
           ),
