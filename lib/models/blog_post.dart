@@ -25,14 +25,47 @@ class BlogPost {
 
   factory BlogPost.fromFirestore(DocumentSnapshot doc) {
     Map data = doc.data() as Map<String, dynamic>;
+    
+    // Safety check for timestamp which could be an int (YYYYMMDD) or a Firestore Timestamp
+    int ts = 0;
+    DateTime? derivedDateTime;
+
+    if (data['timestamp'] != null) {
+      if (data['timestamp'] is int) {
+        ts = data['timestamp'];
+        // Try to derive a DateTime for the display string if needed
+        try {
+          String s = ts.toString();
+          if (s.length == 8) {
+            derivedDateTime = DateTime(
+              int.parse(s.substring(0, 4)),
+              int.parse(s.substring(4, 6)),
+              int.parse(s.substring(6, 8)),
+            );
+          }
+        } catch (_) {}
+      } else if (data['timestamp'] is Timestamp) {
+        final DateTime dt = (data['timestamp'] as Timestamp).toDate();
+        derivedDateTime = dt;
+        // Convert to YYYYMMDD for unified sorting
+        ts = int.parse("${dt.year}${dt.month.toString().padLeft(2, '0')}${dt.day.toString().padLeft(2, '0')}");
+      }
+    }
+
+    // If 'date' string is missing, format it from the timestamp
+    String displayDate = data['date'] ?? '';
+    if (displayDate.isEmpty && derivedDateTime != null) {
+      displayDate = DateFormat("MMM dd, yyyy").format(derivedDateTime);
+    }
+
     return BlogPost(
       id: doc.id,
       title: data['title'] ?? '',
-      date: data['date'] ?? '',
+      date: displayDate.isEmpty ? 'Recent' : displayDate,
       excerpt: data['excerpt'] ?? '',
       content: data['content'] ?? '',
       category: data['category'] ?? '',
-      timestamp: data['timestamp'] ?? 0,
+      timestamp: ts,
     );
   }
 
