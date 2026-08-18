@@ -107,7 +107,7 @@ class _ITTicketScreenState extends State<ITTicketScreen> {
               ),
               const SizedBox(height: 20),
               DropdownButtonFormField<String>(
-                value: _priority,
+                initialValue: _priority,
                 decoration: const InputDecoration(
                   labelText: 'Priority Level',
                   border: OutlineInputBorder(),

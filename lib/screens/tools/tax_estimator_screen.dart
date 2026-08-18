@@ -240,7 +240,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                     title: 'Entity Configuration',
                     children: [
                       DropdownButtonFormField<String>(
-                        value: _entityType,
+                        initialValue: _entityType,
                         decoration: const InputDecoration(labelText: 'Business Entity Type'),
                         items: ['Individual', 'Sole Proprietor / 1099', 'S-Corp', 'C-Corp']
                             .map((s) => DropdownMenuItem(value: s, child: Text(s)))
@@ -285,7 +285,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                     title: 'Filing & Family Status',
                     children: [
                       DropdownButtonFormField<String>(
-                        value: _filingStatus,
+                        initialValue: _filingStatus,
                         decoration: const InputDecoration(labelText: 'Filing Status'),
                         items: ['Single', 'Married (Joint)', 'Head of Household']
                             .map((s) => DropdownMenuItem(value: s, child: Text(s)))

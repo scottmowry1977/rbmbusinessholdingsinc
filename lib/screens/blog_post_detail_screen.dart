@@ -25,7 +25,7 @@ class BlogPostDetailScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: notreDameGold.withOpacity(0.1),
+                color: notreDameGold.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
@@ -68,7 +68,7 @@ class BlogPostDetailScreen extends StatelessWidget {
                 fontSize: 16,
                 height: 1.7,
                 color: Theme.of(context).brightness == Brightness.dark 
-                    ? Colors.white.withOpacity(0.9) 
+                    ? Colors.white.withValues(alpha: 0.9) 
                     : Colors.black87,
                 letterSpacing: 0.2,
               ),

@@ -39,7 +39,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               controller: _tabController,
               isScrollable: true,
               labelColor: Colors.white,
-              unselectedLabelColor: Colors.white.withOpacity(0.6),
+              unselectedLabelColor: Colors.white.withValues(alpha: 0.6),
               indicatorColor: const Color(0xFFC99700),
               indicatorWeight: 3,
               labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
@@ -307,9 +307,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF0C2340).withOpacity(0.05),
+            color: const Color(0xFF0C2340).withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF0C2340).withOpacity(0.1)),
+            border: Border.all(color: const Color(0xFF0C2340).withValues(alpha: 0.1)),
           ),
           child: Column(
             children: [
@@ -342,8 +342,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   }
 
   Widget _buildRoadmapStep(BuildContext context, int number, String title, String detail, IconData icon, bool isDone) {
-    final Color primaryColor = const Color(0xFF0C2340);
-    final Color goldColor = const Color(0xFFC99700);
+    const Color primaryColor = Color(0xFF0C2340);
+    const Color goldColor = Color(0xFFC99700);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 28.0),
@@ -361,7 +361,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                   border: Border.all(color: goldColor, width: 2),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 4,
                       offset: const Offset(0, 2),
                     ),
@@ -377,7 +377,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                 Container(
                   width: 2,
                   height: 48,
-                  color: primaryColor.withOpacity(0.15),
+                  color: primaryColor.withValues(alpha: 0.15),
                 ),
             ],
           ),
@@ -393,7 +393,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
             ),
           ),
           const SizedBox(width: 12),
-          Icon(icon, color: primaryColor.withOpacity(0.2), size: 28),
+          Icon(icon, color: primaryColor.withValues(alpha: 0.2), size: 28),
         ],
       ),
     );
@@ -403,9 +403,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFFC99700).withOpacity(0.05),
+        color: const Color(0xFFC99700).withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFC99700).withOpacity(0.2)),
+        border: Border.all(color: const Color(0xFFC99700).withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

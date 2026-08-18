@@ -164,7 +164,7 @@ class HomeScreen extends StatelessWidget {
             'Expertise in IT Infrastructure, Finance, and M&A Integration',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withValues(alpha: 0.9),
               fontSize: 16,
               letterSpacing: 0.5,
             ),
@@ -185,7 +185,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary.withOpacity(0.5)),
+            Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
             Text(
               title,
@@ -207,14 +207,14 @@ class HomeScreen extends StatelessWidget {
     return Card(
       elevation: 1,
       shadowColor: Colors.transparent,
-      color: Theme.of(context).primaryColor.withOpacity(0.03),
+      color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
-        side: BorderSide(color: Colors.grey.withOpacity(0.1)),
+        side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        leading: Icon(icon, color: Theme.of(context).colorScheme.secondary.withOpacity(0.5), size: 32),
+        leading: Icon(icon, color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5), size: 32),
         title: Text(
           title, 
           style: TextStyle(

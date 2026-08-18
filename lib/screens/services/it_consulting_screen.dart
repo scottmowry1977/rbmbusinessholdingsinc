@@ -94,7 +94,7 @@ class ITConsultingScreen extends StatelessWidget {
       width: double.infinity,
       height: 220,
       decoration: BoxDecoration(
-        color: const Color(0xFF0C2340).withOpacity(0.05),
+        color: const Color(0xFF0C2340).withValues(alpha: 0.05),
       ),
       child: Stack(
         clipBehavior: Clip.none,
@@ -105,7 +105,7 @@ class ITConsultingScreen extends StatelessWidget {
             child: Icon(
               bgIcon,
               size: 250,
-              color: const Color(0xFF0C2340).withOpacity(0.03),
+              color: const Color(0xFF0C2340).withValues(alpha: 0.03),
             ),
           ),
           Center(
@@ -116,7 +116,7 @@ class ITConsultingScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 30,
                     offset: const Offset(0, 15),
                   ),
@@ -146,7 +146,7 @@ class ITConsultingScreen extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF0C2340).withOpacity(0.05),
+              color: const Color(0xFF0C2340).withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, size: 28, color: const Color(0xFFC99700)),

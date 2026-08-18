@@ -163,9 +163,9 @@ class AboutScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF0C2340).withOpacity(0.03),
+        color: const Color(0xFF0C2340).withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFC99700).withOpacity(0.1)),
+        border: Border.all(color: const Color(0xFFC99700).withValues(alpha: 0.1)),
       ),
       child: Column(
         children: [
@@ -254,7 +254,7 @@ class AboutScreen extends StatelessWidget {
   Widget _buildSocialIcon(String url, IconData icon, String tooltip) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF0C2340).withOpacity(0.05),
+        color: const Color(0xFF0C2340).withValues(alpha: 0.05),
         shape: BoxShape.circle,
       ),
       child: IconButton(
