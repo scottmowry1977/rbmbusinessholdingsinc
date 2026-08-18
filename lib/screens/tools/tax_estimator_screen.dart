@@ -97,6 +97,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         fedTax = businessProfit * 0.21;
       } 
       else if (_entityType == 'Individual') {
+        // Individual W-2 / Personal Logic
         double ssPart = (gross > ssWageBase ? ssWageBase : gross) * 0.062;
         double medPart = gross * 0.0145;
         ficaTax = ssPart + medPart;
