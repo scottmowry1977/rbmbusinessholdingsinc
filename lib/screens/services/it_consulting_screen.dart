@@ -123,10 +123,10 @@ class ITConsultingScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const Icon(
+              child: Icon(
                 centerIcon,
                 size: 80,
-                color: Color(0xFFC99700),
+                color: const Color(0xFFC99700),
               ),
             ),
           ),
@@ -151,7 +151,7 @@ class ITConsultingScreen extends StatelessWidget {
               color: const Color(0xFFC99700).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(icon, size: 28, color: Color(0xFFC99700)),
+            child: Icon(icon, size: 28, color: const Color(0xFFC99700)),
           ),
           title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           subtitle: Padding(

@@ -143,7 +143,7 @@ class FinancialServicesScreen extends StatelessWidget {
               color: const Color(0xFFC99700).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(icon, color: Color(0xFFC99700), size: 28),
+            child: Icon(icon, color: const Color(0xFFC99700), size: 28),
           ),
           const SizedBox(width: 20),
           Expanded(
