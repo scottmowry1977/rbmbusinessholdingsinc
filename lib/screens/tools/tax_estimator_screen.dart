@@ -97,7 +97,6 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         fedTax = businessProfit * 0.21;
       } 
       else if (_entityType == 'Individual') {
-        // Individual W-2 / Personal Logic
         double ssPart = (gross > ssWageBase ? ssWageBase : gross) * 0.062;
         double medPart = gross * 0.0145;
         ficaTax = ssPart + medPart;
@@ -136,7 +135,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         fedTax = _calculateAdvancedFederalTax(adjustedTaxable, _filingStatus);
       }
 
-      // Dependent Credits Logic (Individual and Pass-Through)
+      // Dependent Credits Logic (Individual and Sole Prop/S-Corp)
       if (_entityType != 'C-Corp') {
         int numQualifyingChildren = int.tryParse(_childrenController.text) ?? 0;
         int numOtherDependents = int.tryParse(_otherDependentsController.text) ?? 0;
@@ -212,7 +211,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   @override
   Widget build(BuildContext context) {
     const Color notreDameNavy = Color(0xFF0C2340);
-    const Color notreDameGold = Color(0xFFC99700);
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return StreamBuilder<DocumentSnapshot>(
       stream: DatabaseService().streamTaxSettings(),
@@ -232,7 +231,14 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text('Business Strategy Tool', style: GoogleFonts.playfairDisplay(fontSize: 28, fontWeight: FontWeight.bold, color: notreDameNavy)),
+                  Text(
+                    'Business Strategy Tool', 
+                    style: GoogleFonts.playfairDisplay(
+                      fontSize: 28, 
+                      fontWeight: FontWeight.bold, 
+                      color: isDark ? Colors.white : notreDameNavy
+                    )
+                  ),
                   const SizedBox(height: 32),
                   
                   _buildInputCard(
@@ -240,7 +246,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                     title: 'Entity Configuration',
                     children: [
                       DropdownButtonFormField<String>(
-                        initialValue: _entityType,
+                        value: _entityType,
                         decoration: const InputDecoration(labelText: 'Business Entity Type'),
                         items: ['Individual', 'Sole Proprietor / 1099', 'S-Corp', 'C-Corp']
                             .map((s) => DropdownMenuItem(value: s, child: Text(s)))
@@ -285,7 +291,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                     title: 'Filing & Family Status',
                     children: [
                       DropdownButtonFormField<String>(
-                        initialValue: _filingStatus,
+                        value: _filingStatus,
                         decoration: const InputDecoration(labelText: 'Filing Status'),
                         items: ['Single', 'Married (Joint)', 'Head of Household']
                             .map((s) => DropdownMenuItem(value: s, child: Text(s)))
@@ -335,8 +341,8 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                       label: const Text('Download PDF Summary'),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size(double.infinity, 56),
-                        side: const BorderSide(color: notreDameNavy),
-                        foregroundColor: notreDameNavy,
+                        side: BorderSide(color: isDark ? const Color(0xFFC99700) : notreDameNavy),
+                        foregroundColor: isDark ? const Color(0xFFC99700) : notreDameNavy,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       ),
                     ),
@@ -353,10 +359,14 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   }
 
   Widget _buildInputCard(BuildContext context, {required String title, required List<Widget> children}) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 0,
-      color: const Color(0xFF0C2340).withValues(alpha: 0.03),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: Colors.grey.withValues(alpha: 0.1))),
+      color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFF0C2340).withValues(alpha: 0.03),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16), 
+        side: BorderSide(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1))
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -388,7 +398,11 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     const Color notreDameGold = Color(0xFFC99700);
     return Container(
       padding: const EdgeInsets.all(28),
-      decoration: BoxDecoration(color: const Color(0xFF0C2340), borderRadius: BorderRadius.circular(24), boxShadow: [BoxShadow(color: notreDameGold.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2)]),
+      decoration: BoxDecoration(
+        color: const Color(0xFF0C2340), 
+        borderRadius: BorderRadius.circular(24), 
+        boxShadow: [BoxShadow(color: notreDameGold.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2)]
+      ),
       child: Column(children: [
         Text('Estimated Total Liability ($year)', style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 13, letterSpacing: 1.2)),
         const SizedBox(height: 8),

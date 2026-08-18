@@ -8,7 +8,7 @@ class BusinessConsultingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const Color notreDameNavy = Color(0xFF0C2340);
-    const Color notreDameGold = Color(0xFFC99700);
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Business Strategy')),
@@ -28,7 +28,7 @@ class BusinessConsultingScreen extends StatelessWidget {
                     style: GoogleFonts.playfairDisplay(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: notreDameNavy,
+                      color: isDark ? Colors.white : notreDameNavy,
                       height: 1.2,
                     ),
                   ),
@@ -78,11 +78,12 @@ class BusinessConsultingScreen extends StatelessWidget {
   }
 
   Widget _buildHeaderImagery(BuildContext context, IconData centerIcon, IconData bgIcon) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: double.infinity,
       height: 220,
       decoration: BoxDecoration(
-        color: const Color(0xFF0C2340).withValues(alpha: 0.05),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFF0C2340).withValues(alpha: 0.05),
       ),
       child: Stack(
         clipBehavior: Clip.none,
@@ -93,14 +94,14 @@ class BusinessConsultingScreen extends StatelessWidget {
             child: Icon(
               bgIcon,
               size: 250,
-              color: const Color(0xFF0C2340).withValues(alpha: 0.03),
+              color: const Color(0xFFC99700).withValues(alpha: 0.03),
             ),
           ),
           Center(
             child: Container(
               padding: const EdgeInsets.all(32),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: isDark ? const Color(0xFF0C2340) : Colors.white,
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
@@ -110,10 +111,10 @@ class BusinessConsultingScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: Icon(
+              child: const Icon(
                 centerIcon,
                 size: 80,
-                color: const Color(0xFFC99700),
+                color: Color(0xFFC99700),
               ),
             ),
           ),
@@ -123,6 +124,7 @@ class BusinessConsultingScreen extends StatelessWidget {
   }
 
   Widget _buildStrategyItem(BuildContext context, String title, String detail, IconData icon) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 3,
       shadowColor: Colors.black12,
@@ -134,15 +136,22 @@ class BusinessConsultingScreen extends StatelessWidget {
           leading: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF0C2340).withValues(alpha: 0.05),
+              color: const Color(0xFFC99700).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: const Color(0xFFC99700), size: 28),
+            child: const Icon(icon, color: Color(0xFFC99700), size: 28),
           ),
           title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           subtitle: Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Text(detail, style: const TextStyle(height: 1.5, fontSize: 14)),
+            child: Text(
+              detail, 
+              style: TextStyle(
+                height: 1.5, 
+                fontSize: 14,
+                color: isDark ? Colors.white70 : Colors.black87,
+              )
+            ),
           ),
         ),
       ),

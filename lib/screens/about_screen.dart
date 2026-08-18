@@ -160,10 +160,11 @@ class AboutScreen extends StatelessWidget {
   }
 
   Widget _buildValueCard(BuildContext context, String title, String content, IconData icon) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: const Color(0xFF0C2340).withValues(alpha: 0.03),
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFF0C2340).withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: const Color(0xFFC99700).withValues(alpha: 0.1)),
       ),
@@ -179,7 +180,11 @@ class AboutScreen extends StatelessWidget {
           Text(
             content,
             textAlign: TextAlign.center,
-            style: const TextStyle(fontSize: 15, height: 1.6, color: Colors.black87),
+            style: TextStyle(
+              fontSize: 15, 
+              height: 1.6, 
+              color: isDark ? Colors.white70 : Colors.black87,
+            ),
           ),
         ],
       ),

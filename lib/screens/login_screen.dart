@@ -68,14 +68,14 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: GoogleFonts.playfairDisplay(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF0C2340),
+                    color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF0C2340),
                   ),
                 ),
                 const SizedBox(height: 12),
-                const Text(
+                Text(
                   'Access your strategic insights and project roadmaps.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey),
+                  style: TextStyle(color: Theme.of(context).brightness == Brightness.dark ? Colors.white70 : Colors.grey),
                 ),
                 const SizedBox(height: 48),
                 TextFormField(

@@ -12,6 +12,7 @@ class BlogPostDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     const Color notreDameNavy = Color(0xFF0C2340);
     const Color notreDameGold = Color(0xFFC99700);
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -44,9 +45,7 @@ class BlogPostDetailScreen extends StatelessWidget {
               style: GoogleFonts.playfairDisplay(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).brightness == Brightness.dark 
-                    ? Colors.white 
-                    : notreDameNavy,
+                color: isDark ? Colors.white : notreDameNavy,
                 height: 1.2,
               ),
             ),
@@ -67,15 +66,13 @@ class BlogPostDetailScreen extends StatelessWidget {
               textStyle: TextStyle(
                 fontSize: 16,
                 height: 1.7,
-                color: Theme.of(context).brightness == Brightness.dark 
-                    ? Colors.white.withValues(alpha: 0.9) 
-                    : Colors.black87,
+                color: isDark ? Colors.white.withValues(alpha: 0.9) : Colors.black87,
                 letterSpacing: 0.2,
               ),
               customStylesBuilder: (element) {
                 if (element.localName == 'h1' || element.localName == 'h2') {
                   return {
-                    'color': '#0C2340',
+                    'color': isDark ? '#C99700' : '#0C2340',
                     'font-family': 'Playfair Display',
                     'font-weight': 'bold',
                     'margin-top': '24px',
@@ -83,7 +80,10 @@ class BlogPostDetailScreen extends StatelessWidget {
                   };
                 }
                 if (element.localName == 'strong') {
-                  return {'color': '#0C2340', 'font-weight': 'bold'};
+                  return {
+                    'color': isDark ? '#FFFFFF' : '#0C2340', 
+                    'font-weight': 'bold'
+                  };
                 }
                 return null;
               },

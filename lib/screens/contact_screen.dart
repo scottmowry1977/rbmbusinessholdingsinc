@@ -132,10 +132,11 @@ class ContactScreen extends StatelessWidget {
     IconData icon,
     VoidCallback? onTap,
   ) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: ListTile(
-        leading: Icon(icon, color: Theme.of(context).primaryColor),
+        leading: Icon(icon, color: isDark ? const Color(0xFFC99700) : Theme.of(context).primaryColor),
         title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
         subtitle: Text(value),
         onTap: onTap,

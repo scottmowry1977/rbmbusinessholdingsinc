@@ -82,7 +82,7 @@ class _ConsultationFormScreenState extends State<ConsultationFormScreen> {
                 style: GoogleFonts.playfairDisplay(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: const Color(0xFF0C2340),
+                  color: Theme.of(context).brightness == Brightness.dark ? Colors.white : const Color(0xFF0C2340),
                 ),
               ),
               const SizedBox(height: 12),

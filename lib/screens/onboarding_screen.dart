@@ -71,7 +71,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Your Roadmap to Success'),
+          _buildSectionHeader(context, 'Your Roadmap to Success'),
           const SizedBox(height: 12),
           const Text(
             'Follow these steps to initialize your professional partnership with RBM Business Holdings.',
@@ -125,7 +125,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Tax Client Roadmap'),
+          _buildSectionHeader(context, 'Tax Client Roadmap'),
           const SizedBox(height: 12),
           const Text(
             'Streamlined onboarding for individual and corporate tax planning clients.',
@@ -179,7 +179,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Accounting Roadmap'),
+          _buildSectionHeader(context, 'Accounting Roadmap'),
           const SizedBox(height: 12),
           const Text(
             'Transitioning your daily financial operations to RBM management.',
@@ -233,7 +233,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSectionHeader('Consulting Roadmap'),
+          _buildSectionHeader(context, 'Consulting Roadmap'),
           const SizedBox(height: 12),
           const Text(
             'Laying the foundation for your business growth and operational efficiency.',
@@ -281,18 +281,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
     );
   }
 
-  Widget _buildSectionHeader(String text) {
+  Widget _buildSectionHeader(BuildContext context, String text) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Text(
       text,
       style: GoogleFonts.playfairDisplay(
         fontSize: 28,
         fontWeight: FontWeight.bold,
-        color: const Color(0xFF0C2340),
+        color: isDark ? Colors.white : const Color(0xFF0C2340),
       ),
     );
   }
 
   Widget _buildDesktopHandoff(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    const Color notreDameNavy = Color(0xFF0C2340);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -307,13 +311,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: const Color(0xFF0C2340).withValues(alpha: 0.05),
+            color: isDark ? Colors.white.withValues(alpha: 0.05) : notreDameNavy.withValues(alpha: 0.05),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF0C2340).withValues(alpha: 0.1)),
+            border: Border.all(color: (isDark ? Colors.white : notreDameNavy).withValues(alpha: 0.1)),
           ),
           child: Column(
             children: [
-              const Icon(Icons.laptop_mac, size: 48, color: Color(0xFF0C2340)),
+              Icon(Icons.laptop_mac, size: 48, color: isDark ? Colors.white : notreDameNavy),
               const SizedBox(height: 16),
               Text(
                 'To ensure the highest accuracy for your business data, our intake forms must be completed on a computer.',
@@ -321,17 +325,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                 style: GoogleFonts.montserrat(
                   fontSize: 15,
                   fontWeight: FontWeight.w500,
-                  color: const Color(0xFF0C2340),
+                  color: isDark ? Colors.white : notreDameNavy,
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
+              Text(
                 'Please visit rbmbusinessholdingsinc.com on your desktop or laptop and navigate to the Client Forms page to begin.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 14,
                   height: 1.5,
-                  color: Colors.black87,
+                  color: isDark ? Colors.white70 : Colors.black87,
                 ),
               ),
             ],
@@ -342,6 +346,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
   }
 
   Widget _buildRoadmapStep(BuildContext context, int number, String title, String detail, IconData icon, bool isDone) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     const Color primaryColor = Color(0xFF0C2340);
     const Color goldColor = Color(0xFFC99700);
 
@@ -356,7 +361,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                 width: 44,
                 height: 44,
                 decoration: BoxDecoration(
-                  color: isDone ? Colors.green : primaryColor,
+                  color: isDone ? Colors.green : (isDark ? Colors.white.withValues(alpha: 0.1) : primaryColor),
                   shape: BoxShape.circle,
                   border: Border.all(color: goldColor, width: 2),
                   boxShadow: [
@@ -370,14 +375,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
                 child: Center(
                   child: isDone 
                     ? const Icon(Icons.check, color: Colors.white, size: 24)
-                    : Text('$number', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                    : Text(
+                        '$number', 
+                        style: TextStyle(
+                          color: isDark ? Colors.white : Colors.white, 
+                          fontWeight: FontWeight.bold, 
+                          fontSize: 18
+                        )
+                      ),
                 ),
               ),
               if (number < 3)
                 Container(
                   width: 2,
                   height: 48,
-                  color: primaryColor.withValues(alpha: 0.15),
+                  color: (isDark ? Colors.white : primaryColor).withValues(alpha: 0.15),
                 ),
             ],
           ),
@@ -388,18 +400,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               children: [
                 Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: 0.2)),
                 const SizedBox(height: 6),
-                Text(detail, style: const TextStyle(fontSize: 14, color: Colors.black54, height: 1.4)),
+                Text(
+                  detail, 
+                  style: TextStyle(
+                    fontSize: 14, 
+                    color: isDark ? Colors.white70 : Colors.black54, 
+                    height: 1.4
+                  )
+                ),
               ],
             ),
           ),
           const SizedBox(width: 12),
-          Icon(icon, color: primaryColor.withValues(alpha: 0.2), size: 28),
+          Icon(icon, color: (isDark ? Colors.white : primaryColor).withValues(alpha: 0.2), size: 28),
         ],
       ),
     );
   }
 
   Widget _buildPreparationSection(BuildContext context, String title, List<String> items) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -416,27 +436,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> with SingleTickerPr
               const SizedBox(width: 12),
               Text(
                 title, 
-                style: GoogleFonts.montserrat(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xFF0C2340)),
+                style: GoogleFonts.montserrat(
+                  fontSize: 18, 
+                  fontWeight: FontWeight.bold, 
+                  color: isDark ? Colors.white : const Color(0xFF0C2340)
+                ),
               ),
             ],
           ),
           const SizedBox(height: 16),
           const Text('Have these items ready before starting intake:', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
           const SizedBox(height: 16),
-          ...items.map((item) => _buildBulletPoint(item)).toList(),
+          ...items.map((item) => _buildBulletPoint(context, item)).toList(),
         ],
       ),
     );
   }
 
-  Widget _buildBulletPoint(String text) {
+  Widget _buildBulletPoint(BuildContext context, String text) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10.0),
       child: Row(
         children: [
           const Icon(Icons.check_circle_outline, size: 16, color: Color(0xFFC99700)),
           const SizedBox(width: 10),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 14, color: Colors.black87))),
+          Expanded(child: Text(text, style: TextStyle(fontSize: 14, color: isDark ? Colors.white70 : Colors.black87))),
         ],
       ),
     );

@@ -158,16 +158,20 @@ class AppDrawer extends StatelessWidget {
     final bool isSelected = ModalRoute.of(context)?.settings.name == route;
     const Color notreDameNavy = Color(0xFF0C2340);
 
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return ListTile(
       leading: Icon(
         icon,
-        color: isSelected ? const Color(0xFFC99700) : notreDameNavy,
+        color: isSelected ? const Color(0xFFC99700) : (isDark ? Colors.white70 : notreDameNavy),
       ),
       title: Text(
         title,
         style: TextStyle(
           fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-          color: isSelected ? notreDameNavy : Colors.black87,
+          color: isSelected 
+              ? (isDark ? const Color(0xFFC99700) : notreDameNavy) 
+              : (isDark ? Colors.white : Colors.black87),
         ),
       ),
       selected: isSelected,

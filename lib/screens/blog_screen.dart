@@ -10,6 +10,8 @@ class BlogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(title: const Text('Insights & News')),
       drawer: const AppDrawer(),
@@ -62,7 +64,6 @@ class BlogScreen extends StatelessWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              // Trigger a rebuild by forcing a new fetch
               (context as Element).markNeedsBuild();
             },
             child: ListView.builder(
@@ -96,9 +97,9 @@ class BlogScreen extends StatelessWidget {
                               color: const Color(0xFFC99700).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: Text(
-                              post.category.toUpperCase(),
-                              style: const TextStyle(
+                            child: const Text(
+                              'post.category.toUpperCase()',
+                              style: TextStyle(
                                 color: Color(0xFFC99700),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11,
@@ -112,6 +113,7 @@ class BlogScreen extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontSize: 22,
                               height: 1.3,
+                              color: isDark ? Colors.white : const Color(0xFF0C2340),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -127,12 +129,12 @@ class BlogScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            post.excerpt.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''), // Strip HTML tags
+                            post.excerpt.replaceAll(RegExp(r'<[^>]*>|&[^;]+;'), ''), 
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 15, 
-                              color: Colors.black54,
+                              color: isDark ? Colors.white70 : Colors.black54,
                               height: 1.6,
                             ),
                           ),
@@ -142,14 +144,18 @@ class BlogScreen extends StatelessWidget {
                               Text(
                                 'READ ARTICLE',
                                 style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
+                                  color: isDark ? const Color(0xFFC99700) : Theme.of(context).primaryColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 13,
                                   letterSpacing: 1.0,
                                 ),
                               ),
                               const SizedBox(width: 8),
-                              Icon(Icons.arrow_forward, size: 16, color: Theme.of(context).primaryColor),
+                              Icon(
+                                Icons.arrow_forward, 
+                                size: 16, 
+                                color: isDark ? const Color(0xFFC99700) : Theme.of(context).primaryColor
+                              ),
                             ],
                           ),
                         ],

@@ -176,6 +176,7 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildServiceCard(
       BuildContext context, String title, IconData icon) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 2,
       shadowColor: Colors.black12,
@@ -185,7 +186,7 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5)),
+            Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary.withValues(alpha: isDark ? 0.8 : 0.5)),
             const SizedBox(height: 16),
             Text(
               title,
@@ -193,7 +194,7 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
-                color: Colors.grey[600],
+                color: isDark ? Colors.white70 : Colors.grey[600],
               ),
             ),
           ],
@@ -204,30 +205,31 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildLargeInfoCard(
       BuildContext context, String title, String subtitle, IconData icon) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 1,
       shadowColor: Colors.transparent,
-      color: Theme.of(context).primaryColor.withValues(alpha: 0.03),
+      color: isDark ? Colors.white.withValues(alpha: 0.05) : Theme.of(context).primaryColor.withValues(alpha: 0.03),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
         side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        leading: Icon(icon, color: Theme.of(context).colorScheme.secondary.withValues(alpha: 0.5), size: 32),
+        leading: Icon(icon, color: Theme.of(context).colorScheme.secondary.withValues(alpha: isDark ? 0.8 : 0.5), size: 32),
         title: Text(
           title, 
           style: TextStyle(
             fontWeight: FontWeight.w500, 
             fontSize: 17,
-            color: Colors.grey[700],
+            color: isDark ? Colors.white : Colors.grey[700],
           )
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
           child: Text(
             subtitle, 
-            style: TextStyle(fontSize: 13, color: Colors.grey[500])
+            style: TextStyle(fontSize: 13, color: isDark ? Colors.white60 : Colors.grey[500])
           ),
         ),
       ),
