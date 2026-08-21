@@ -15,7 +15,7 @@ workflows:
       - name: Set up code signing
         script: |
           keychain initialize
-          # Fetch or create the signing certificate and provisioning profile
+          # This command forces creation of the certificate and key if missing
           app-store-connect fetch-signing-files "com.rbmbusinessholdingsinc.app" --type IOS_APP_STORE --create
           keychain add-certificates
       - name: Flutter pub get
