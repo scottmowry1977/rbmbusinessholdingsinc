@@ -1,4 +1,4 @@
-# Finalized build script
+# Build Version: 2026-08-21T19:00:00
 workflows:
   ios-testflight:
     name: RBM Holdings iOS TestFlight
@@ -17,7 +17,7 @@ workflows:
     integrations:
       app_store_connect: "RBM Connect"
     scripts:
-      - name: Build and Sign IPA
+      - name: Build and Sign
         script: |
           # 1. Initialize the Mac keychain
           keychain initialize
@@ -26,7 +26,6 @@ workflows:
           rm -f ~/Library/MobileDevice/Provisioning\ Profiles/*
           
           # 3. Fetch and create the signing files from Apple
-          # We use --type IOS_APP_STORE as it is the standard for TestFlight
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           
           # 4. Add the certificates to the keychain
@@ -38,7 +37,7 @@ workflows:
           # 6. Build the app
           flutter pub get
           # Note: we use xcode-project build-ipa as it is more robust for automatic signing
-          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" --bundle-id "$BUNDLE_ID"
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
