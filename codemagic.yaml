@@ -10,7 +10,7 @@ workflows:
       groups:
         - app_store_credentials # We will set this up in the Codemagic UI
     integrations:
-      app_store_connect: "RBM Holdings" # Use the name you gave the integration in Codemagic UI
+      app_store_connect: "RBM Connect" # Matches the name you gave in Codemagic UI
     scripts:
       - name: Set up code signing
         script: |
