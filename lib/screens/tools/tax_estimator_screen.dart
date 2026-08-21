@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import '../../widgets/app_drawer.dart';
 import '../../services/database_service.dart';
 import '../../services/pdf_service.dart';
@@ -388,10 +389,10 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 0,
-      color: isDark ? Colors.white.withOpacity(0.05) : const Color(0xFF0C2340).withOpacity(0.03),
+      color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFF0C2340).withValues(alpha: 0.03),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16), 
-        side: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.1))
+        side: BorderSide(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1))
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -414,7 +415,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         labelText: label, 
         prefixIcon: Icon(icon, size: 20), 
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        fillColor: enabled ? null : (isDark ? Colors.white10 : Colors.grey.withOpacity(0.1)),
+        fillColor: enabled ? null : (isDark ? Colors.white10 : Colors.grey.withValues(alpha: 0.1)),
         filled: !enabled,
       ),
       validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
@@ -428,7 +429,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF0C2340), 
         borderRadius: BorderRadius.circular(24), 
-        boxShadow: [BoxShadow(color: notreDameGold.withOpacity(0.2), blurRadius: 20, spreadRadius: 2)]
+        boxShadow: [BoxShadow(color: notreDameGold.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2)]
       ),
       child: Column(children: [
         Text('Estimated Total Liability ($year)', style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 13, letterSpacing: 1.2)),
@@ -453,7 +454,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
             child: Text('S-Corp SE Tax Savings: \$${_seTaxSavings.toStringAsFixed(0)}', style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         ],
