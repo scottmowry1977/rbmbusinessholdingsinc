@@ -19,16 +19,19 @@ workflows:
       - name: Set up code signing
         script: |
           keychain initialize
+          # Fetch signing files and force creation if necessary
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           keychain add-certificates
-          xcode-project use-profiles
+          xcode-project use-profiles --bundle-id "$BUNDLE_ID"
       - name: Flutter build
         script: |
           flutter pub get
-          flutter build ios --release --no-codesign
+          # Build the archive without signing first
+          flutter build ipa --release --no-codesign
       - name: Build IPA
         script: |
-          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+          # Use Codemagic's tool to perform the actual signing and IPA creation
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" --bundle-id "$BUNDLE_ID"
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
