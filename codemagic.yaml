@@ -21,20 +21,23 @@ workflows:
           # 1. Initialize the Mac keychain
           keychain initialize
           
-          # 2. Fetch and create the signing files from Apple
-          # Correct type for App Store/TestFlight is IOS_APP_STORE
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create --install
+          # 2. Clear out any cached/conflicting profiles on the build machine
+          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/*
           
-          # 3. Add the certificates to the keychain
+          # 3. Fetch and create the signing files from Apple
+          # We use --type IOS_APP_STORE as it is the standard for TestFlight
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          
+          # 4. Add the certificates to the keychain
           keychain add-certificates
           
-          # 4. Configure the project to use the new profiles
+          # 5. Configure the project to use the new profiles
           xcode-project use-profiles
           
-          # 5. Build the app
+          # 6. Build the app
           flutter pub get
           # Note: we use xcode-project build-ipa as it is more robust for automatic signing
-          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME" --bundle-id "$BUNDLE_ID"
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
