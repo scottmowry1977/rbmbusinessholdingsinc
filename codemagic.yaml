@@ -9,6 +9,7 @@ workflows:
       vars:
         XCODE_WORKSPACE: "Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
+        BUNDLE_ID: "com.rbmbusinessholdingsinc.app"
       flutter: stable
       xcode: latest
       cocoapods: default
@@ -18,15 +19,16 @@ workflows:
       - name: Set up code signing
         script: |
           keychain initialize
-          app-store-connect fetch-signing-files "com.rbmbusinessholdingsinc.app" --type IOS_APP_STORE --create --install
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           keychain add-certificates
+          xcode-project use-profiles
       - name: Flutter pub get
         script: |
           flutter pub get
       - name: Build iOS Archive
         script: |
           flutter build ipa --release \
-            --bundle-id "com.rbmbusinessholdingsinc.app" \
+            --bundle-id "$BUNDLE_ID" \
             --export-options-plist /Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
