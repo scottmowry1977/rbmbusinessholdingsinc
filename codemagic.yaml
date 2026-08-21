@@ -9,6 +9,8 @@ workflows:
       cocoapods: default
       groups:
         - app_store_credentials # We will set this up in the Codemagic UI
+    integrations:
+      app_store_connect: "RBM Holdings" # Use the name you gave the integration in Codemagic UI
     scripts:
       - name: Set up code signing
         script: |
@@ -28,3 +30,6 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
+        submit_to_testflight: true
+        beta_groups:
+          - "Testers" # Or whatever your group name is in App Store Connect
