@@ -1,20 +1,8 @@
-# The following has been added by the flutter tool.
-def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
-  unless File.exist?(generated_xcode_build_settings_path)
-    raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first."
-  end
-
-  File.foreach(generated_xcode_build_settings_path) do |line|
-    matches = line.match(/\AFLUTTER_ROOT\=(.*)\z/)
-    return matches[1].strip if matches
-  end
-  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
-end
-
-require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelper.rb'), flutter_root)
-
-platform :ios, '13.0'
+# The next line is added by the Flutter tool
+# and it is required to locate the Flutter SDK and its tools.
+# It is important not to delete or modify this line.
+# If you are using a custom Flutter installation, you may need to adjust the path.
+load File.join(File.dirname(File.realpath(__FILE__)), '..', 'Flutter', 'podhelper.rb')
 
 target 'Runner' do
   use_frameworks!
