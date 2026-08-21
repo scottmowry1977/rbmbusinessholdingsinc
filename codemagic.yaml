@@ -1,0 +1,30 @@
+workflows:
+  ios-testflight:
+    name: RBM Holdings iOS TestFlight
+    instance_type: mac_mini_m1
+    max_build_duration: 30
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      groups:
+        - app_store_credentials # We will set this up in the Codemagic UI
+    scripts:
+      - name: Set up code signing
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files "com.rbmbusinessholdingsinc.app.RBM-Business-Holdings-Inc" --type IOS_APP_STORE --create
+          keychain add-certificates
+      - name: Flutter pub get
+        script: |
+          flutter pub get
+      - name: Build iOS Archive
+        script: |
+          flutter build ipa --release \
+            --bundle-sks-path "com.rbmbusinessholdingsinc.app.RBM-Business-Holdings-Inc" \
+            --export-options-plist /Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
