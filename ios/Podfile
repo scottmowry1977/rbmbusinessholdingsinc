@@ -2,7 +2,7 @@
 # and it is required to locate the Flutter SDK and its tools.
 # It is important not to delete or modify this line.
 # If you are using a custom Flutter installation, you may need to adjust the path.
-load File.join(File.dirname(File.realpath(__FILE__)), '..', 'Flutter', 'podhelper.rb')
+load File.join(File.dirname(File.realpath(__FILE__)), 'Flutter', 'podhelper.rb')
 
 target 'Runner' do
   use_frameworks!
