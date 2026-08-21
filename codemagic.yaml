@@ -16,21 +16,24 @@ workflows:
     integrations:
       app_store_connect: "RBM Connect"
     scripts:
-      - name: Set up code signing
+      - name: Build and Sign
         script: |
+          # 1. Initialize the Mac keychain
           keychain initialize
-          # We use --create to force Codemagic to generate a certificate if none is found.
-          # We use --install to ensure the generated certificate is available for signing.
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type APPLE_DISTRIBUTION --create --install
+          
+          # 2. Fetch and create the signing files from Apple
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type APPLE_DISTRIBUTION --create
+          
+          # 3. Add the certificates to the keychain
           keychain add-certificates
+          
+          # 4. Configure the project to use the new profiles
           xcode-project use-profiles
-      - name: Build IPA
-        script: |
+          
+          # 5. Build the app
           flutter pub get
-          # The key is to use the generated export options from the previous step
-          flutter build ipa --release \
-            --export-options-plist=$CM_EXPORT_OPTIONS_PATH \
-            --build-number=$BUILD_NUMBER
+          # Note: we use xcode-project build-ipa as it is more robust for automatic signing
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:

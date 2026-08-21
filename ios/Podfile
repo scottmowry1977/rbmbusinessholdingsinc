@@ -2,46 +2,7 @@
 # and it is required to locate the Flutter SDK and its tools.
 # It is important not to delete or modify this line.
 # If you are using a custom Flutter installation, you may need to adjust the path.
-
-def find_podhelper
-  # 1. Check for podhelper.rb in the local Flutter folder
-  local_path = File.expand_path(File.join('Flutter', 'podhelper.rb'), __dir__)
-  return local_path if File.exist?(local_path)
-
-  # 2. Check FLUTTER_ROOT environment variable (standard in Codemagic)
-  if ENV['FLUTTER_ROOT']
-    sdk_path = File.expand_path(File.join(ENV['FLUTTER_ROOT'], 'packages', 'flutter_tools', 'bin', 'podhelper.rb'))
-    return sdk_path if File.exist?(sdk_path)
-  end
-
-  # 3. Check for Generated.xcconfig (robust way to find SDK for the project)
-  begin
-    generated_xcconfig = File.expand_path(File.join('Flutter', 'Generated.xcconfig'), __dir__)
-    if File.exist?(generated_xcconfig)
-      File.foreach(generated_xcconfig) do |line|
-        if line.start_with?('FLUTTER_ROOT=')
-          flutter_root = line.split('=')[1].strip
-          sdk_path = File.expand_path(File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper.rb'))
-          return sdk_path if File.exist?(sdk_path)
-        end
-      end
-    end
-  rescue
-  end
-
-  # 4. Try to find it via 'which flutter'
-  flutter_bin = `which flutter 2>/dev/null`.strip
-  if !flutter_bin.empty?
-    sdk_root = File.expand_path('..', File.dirname(flutter_bin))
-    sdk_path = File.join(sdk_root, 'packages', 'flutter_tools', 'bin', 'podhelper.rb')
-    return sdk_path if File.exist?(sdk_path)
-  end
-
-  # Return default even if it fails, so the error message is clear
-  local_path
-end
-
-load find_podhelper
+load File.join(File.dirname(File.realpath(__FILE__)), '..', 'Flutter', 'podhelper.rb')
 
 target 'Runner' do
   use_frameworks!
@@ -53,10 +14,5 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
-
-    # Enable deployment target matching
-    target.build_configurations.each do |config|
-      config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
-    end
   end
 end
