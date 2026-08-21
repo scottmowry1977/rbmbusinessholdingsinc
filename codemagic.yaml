@@ -15,8 +15,9 @@ workflows:
       - name: Set up code signing
         script: |
           keychain initialize
-          # This command forces creation of the certificate and key if missing
-          app-store-connect fetch-signing-files "com.rbmbusinessholdingsinc.app" --type IOS_APP_STORE --create
+          # Fetch or create the signing certificate. 
+          # If you revoked the old one, this will create a fresh one + private key.
+          app-store-connect fetch-signing-files "com.rbmbusinessholdingsinc.app" --type IOS_APP_STORE --create --install
           keychain add-certificates
       - name: Flutter pub get
         script: |
