@@ -97,9 +97,9 @@ class BlogScreen extends StatelessWidget {
                               color: const Color(0xFFC99700).withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Text(
-                              'post.category.toUpperCase()',
-                              style: TextStyle(
+                            child: Text(
+                              post.category.toUpperCase(),
+                              style: const TextStyle(
                                 color: Color(0xFFC99700),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 11,

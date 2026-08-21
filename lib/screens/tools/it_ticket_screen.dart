@@ -61,6 +61,7 @@ class _ITTicketScreenState extends State<ITTicketScreen> {
   @override
   Widget build(BuildContext context) {
     const Color notreDameNavy = Color(0xFF0C2340);
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(title: const Text('IT Support Request')),
@@ -77,7 +78,7 @@ class _ITTicketScreenState extends State<ITTicketScreen> {
                 style: GoogleFonts.playfairDisplay(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: notreDameNavy,
+                  color: isDark ? Colors.white : notreDameNavy,
                 ),
               ),
               const SizedBox(height: 8),
