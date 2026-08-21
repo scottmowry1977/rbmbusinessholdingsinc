@@ -7,7 +7,7 @@ workflows:
       groups:
         - app_store_credentials
       vars:
-        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_WORKSPACE: "ios/Runner.xcworkspace"
         XCODE_SCHEME: "Runner"
         BUNDLE_ID: "com.rbmbusinessholdingsinc.app"
       flutter: stable
@@ -22,13 +22,13 @@ workflows:
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           keychain add-certificates
           xcode-project use-profiles
-      - name: Flutter pub get
+      - name: Flutter build
         script: |
           flutter pub get
-      - name: Build iOS Archive
+          flutter build ios --release --no-codesign
+      - name: Build IPA
         script: |
-          flutter build ipa --release \
-            --export-options-plist /Users/builder/export_options.plist
+          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
