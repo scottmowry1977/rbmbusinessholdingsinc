@@ -4,19 +4,20 @@ workflows:
     instance_type: mac_mini_m1
     max_build_duration: 30
     environment:
+      groups:
+        - app_store_credentials
+      vars:
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
       flutter: stable
       xcode: latest
       cocoapods: default
-      groups:
-        - app_store_credentials # We will set this up in the Codemagic UI
     integrations:
-      app_store_connect: "RBM Connect" # Matches the name you gave in Codemagic UI
+      app_store_connect: "RBM Connect"
     scripts:
       - name: Set up code signing
         script: |
           keychain initialize
-          # Fetch or create the signing certificate. 
-          # If you revoked the old one, this will create a fresh one + private key.
           app-store-connect fetch-signing-files "com.rbmbusinessholdingsinc.app" --type IOS_APP_STORE --create --install
           keychain add-certificates
       - name: Flutter pub get
@@ -25,7 +26,7 @@ workflows:
       - name: Build iOS Archive
         script: |
           flutter build ipa --release \
-            --bundle-sks-path "com.rbmbusinessholdingsinc.app" \
+            --bundle-id "com.rbmbusinessholdingsinc.app" \
             --export-options-plist /Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
@@ -34,4 +35,4 @@ workflows:
         auth: integration
         submit_to_testflight: true
         beta_groups:
-          - "Testers" # Or whatever your group name is in App Store Connect
+          - "Testers"
