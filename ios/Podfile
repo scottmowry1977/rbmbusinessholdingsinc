@@ -2,7 +2,26 @@
 # and it is required to locate the Flutter SDK and its tools.
 # It is important not to delete or modify this line.
 # If you are using a custom Flutter installation, you may need to adjust the path.
-load File.join(File.dirname(File.realpath(__FILE__)), 'Flutter', 'podhelper.rb')
+def flutter_podhelper_path
+  path = File.join(File.dirname(File.expand_path(__FILE__)), 'Flutter', 'podhelper.rb')
+  return path if File.exist?(path)
+
+  if ENV['FLUTTER_ROOT']
+    return File.join(ENV['FLUTTER_ROOT'], 'packages', 'flutter_tools', 'bin', 'podhelper.rb')
+  end
+
+  # Fallback for environments where podhelper.rb is not in the expected location
+  # but flutter is in the path (e.g. some CI environments)
+  flutter_bin = `which flutter 2>/dev/null`.strip
+  if !flutter_bin.empty?
+    flutter_root = File.expand_path('..', File.dirname(flutter_bin))
+    return File.join(flutter_root, 'packages', 'flutter_tools', 'bin', 'podhelper.rb')
+  end
+
+  path # Return the original path if everything else fails, so the load error is clear
+end
+
+load flutter_podhelper_path
 
 target 'Runner' do
   use_frameworks!
