@@ -16,19 +16,16 @@ workflows:
     integrations:
       app_store_connect: "RBM Connect"
     scripts:
-      - name: Flutter build
-        script: |
-          flutter pub get
-          flutter build ios --release --no-codesign
       - name: Set up code signing
         script: |
           keychain initialize
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           keychain add-certificates
           xcode-project use-profiles
-      - name: Build IPA
+      - name: Flutter build
         script: |
-          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+          flutter pub get
+          flutter build ipa --release --export-options-plist=$CM_EXPORT_OPTIONS_PATH
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
