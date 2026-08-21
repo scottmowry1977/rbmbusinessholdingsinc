@@ -19,16 +19,17 @@ workflows:
       - name: Set up code signing
         script: |
           keychain initialize
-          app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
+          app-store-connect fetch-signing-files "$BUNDLE_ID" --type APPLE_DISTRIBUTION --create
           keychain add-certificates
           xcode-project use-profiles
-      - name: Flutter build
-        script: |
-          flutter pub get
-          flutter build ios --release --no-codesign
       - name: Build IPA
         script: |
-          xcode-project build-ipa --workspace "$XCODE_WORKSPACE" --scheme "$XCODE_SCHEME"
+          flutter pub get
+          if [ -z "$CM_EXPORT_OPTIONS_PATH" ]; then
+            echo "Error: CM_EXPORT_OPTIONS_PATH is not set. Code signing might have failed."
+            exit 1
+          fi
+          flutter build ipa --release --export-options-plist=$CM_EXPORT_OPTIONS_PATH
     artifacts:
       - build/ios/ipa/*.ipa
     publishing:
