@@ -18,6 +18,7 @@ class PdfService {
     required double effectiveRate,
     required String year,
     double childTaxCredit = 0,
+    double otherDependentCredit = 0,
   }) async {
     final pdf = pw.Document();
     final NumberFormat currency = NumberFormat.currency(symbol: '\$');
@@ -81,7 +82,9 @@ class PdfService {
               _buildRow('Business Expenses', currency.format(expenses)),
               _buildRow('Standard Deduction', currency.format(deduction)),
               if (childTaxCredit > 0)
-                _buildRow('Child Tax Credit (Est)', currency.format(childTaxCredit)),
+                _buildRow('Child Tax Credit (Est)', '- ${currency.format(childTaxCredit)}'),
+              if (otherDependentCredit > 0)
+                _buildRow('Other Dependent Credit (Est)', '- ${currency.format(otherDependentCredit)}'),
               
               pw.SizedBox(height: 30),
               pw.Container(

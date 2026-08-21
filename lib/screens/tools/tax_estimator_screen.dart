@@ -1,6 +1,8 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import '../../widgets/app_drawer.dart';
 import '../../services/database_service.dart';
 import '../../services/pdf_service.dart';
@@ -21,7 +23,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   final _otherDependentsController = TextEditingController(text: '0');
   final _adjustmentsController = TextEditingController(text: '0');
   
-  String _entityType = 'Sole Proprietor / 1099';
+  String _entityType = 'Individual';
   String _filingStatus = 'Single';
   
   double _estimatedTotalTax = 0;
@@ -31,10 +33,11 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   double _netIncome = 0;
   double _appliedDeduction = 0;
   double _seTaxSavings = 0;
-  double _appliedDependentCredits = 0;
+  double _appliedChildCredit = 0;
+  double _appliedOtherDependentCredit = 0;
   String _currentYearText = "2026";
 
-  // 2026 Federal Brackets (Baseline)
+  // 2026 Federal Brackets (Baseline Projections)
   final Map<String, List<double>> _thresholds = {
     'Single': [11925, 48475, 103350, 197300, 250525, 626350],
     'Married (Joint)': [23850, 96950, 206700, 394600, 501050, 751600],
@@ -64,7 +67,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   void _calculateTax(Map<String, dynamic> config) {
     if (_formKey.currentState!.validate()) {
       double gross = double.tryParse(_incomeController.text) ?? 0;
-      double expenses = double.tryParse(_expensesController.text) ?? 0;
+      double expenses = _entityType == 'Individual' ? 0 : (double.tryParse(_expensesController.text) ?? 0);
       double adjustments = double.tryParse(_adjustmentsController.text) ?? 0;
       double businessProfit = gross - expenses;
       if (businessProfit < 0) businessProfit = 0;
@@ -86,7 +89,8 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       double fedTax = 0;
       double ficaTax = 0;
       _seTaxSavings = 0;
-      _appliedDependentCredits = 0;
+      _appliedChildCredit = 0;
+      _appliedOtherDependentCredit = 0;
 
       // 2026 FICA/SE Math
       const double ssWageBase = 184500;
@@ -97,7 +101,8 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         fedTax = businessProfit * 0.21;
       } 
       else if (_entityType == 'Individual') {
-        double ssPart = (gross > ssWageBase ? ssWageBase : gross) * 0.062;
+        // Individual W-2 / Personal Logic (Employee side only)
+        double ssPart = min(gross, ssWageBase) * 0.062;
         double medPart = gross * 0.0145;
         ficaTax = ssPart + medPart;
         
@@ -109,7 +114,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         double salary = double.tryParse(_salaryController.text) ?? (businessProfit * 0.4);
         if (salary > businessProfit) salary = businessProfit;
         
-        double ssPart = (salary > ssWageBase ? ssWageBase : salary) * ssRate;
+        double ssPart = min(salary, ssWageBase) * ssRate;
         double medPart = salary * medicareRate;
         ficaTax = ssPart + medPart;
         
@@ -117,16 +122,18 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         if (taxableIndividualIncome < 0) taxableIndividualIncome = 0;
         fedTax = _calculateAdvancedFederalTax(taxableIndividualIncome, _filingStatus);
         
+        // Savings comparison vs Sole Prop
         double spProfitForSe = businessProfit * 0.9235;
-        double spSs = (spProfitForSe > ssWageBase ? ssWageBase : spProfitForSe) * ssRate;
+        double spSs = min(spProfitForSe, ssWageBase) * ssRate;
         double spMed = spProfitForSe * medicareRate;
         double spSeTotal = spSs + spMed;
         double spFed = _calculateAdvancedFederalTax((businessProfit - (spSeTotal * 0.5)) - standardDeduction - adjustments, _filingStatus);
         _seTaxSavings = (spSeTotal + spFed) - (ficaTax + fedTax);
       } 
       else {
+        // Sole Prop / 1099
         double profitForSe = businessProfit * 0.9235;
-        double ssPart = (profitForSe > ssWageBase ? ssWageBase : profitForSe) * ssRate;
+        double ssPart = min(profitForSe, ssWageBase) * ssRate;
         double medPart = profitForSe * medicareRate;
         ficaTax = ssPart + medPart;
 
@@ -135,29 +142,36 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         fedTax = _calculateAdvancedFederalTax(adjustedTaxable, _filingStatus);
       }
 
-      // Dependent Credits Logic (Individual and Sole Prop/S-Corp)
+      // Dependent Credits Logic (Individual and Pass-Through)
       if (_entityType != 'C-Corp') {
         int numQualifyingChildren = int.tryParse(_childrenController.text) ?? 0;
         int numOtherDependents = int.tryParse(_otherDependentsController.text) ?? 0;
         
         if (numQualifyingChildren > 0 || numOtherDependents > 0) {
-          double maxCredits = (numQualifyingChildren * 2000.0) + (numOtherDependents * 500.0);
+          double totalPossibleCredit = (numQualifyingChildren * 2000.0) + (numOtherDependents * 500.0);
           double phaseOutThreshold = (_filingStatus == 'Married (Joint)') ? 400000 : 200000;
           double incomeForPhaseOut = (_entityType == 'Individual') ? gross : businessProfit;
           
-          double credit = maxCredits;
+          double allowedCredit = totalPossibleCredit;
           if (incomeForPhaseOut > phaseOutThreshold) {
             double excess = incomeForPhaseOut - phaseOutThreshold;
-            credit = maxCredits - ((excess / 1000).ceil() * 50.0);
-            if (credit < 0) credit = 0;
+            allowedCredit = max(0.0, totalPossibleCredit - ((excess / 1000).ceil() * 50.0));
           }
           
-          if (credit > fedTax) {
-            _appliedDependentCredits = fedTax;
+          double ratio = totalPossibleCredit > 0 ? allowedCredit / totalPossibleCredit : 0;
+          _appliedChildCredit = (numQualifyingChildren * 2000.0) * ratio;
+          _appliedOtherDependentCredit = (numOtherDependents * 500.0) * ratio;
+
+          double totalApplied = _appliedChildCredit + _appliedOtherDependentCredit;
+          if (totalApplied > fedTax) {
+            if (totalApplied > 0) {
+              double capRatio = fedTax / totalApplied;
+              _appliedChildCredit *= capRatio;
+              _appliedOtherDependentCredit *= capRatio;
+            }
             fedTax = 0;
           } else {
-            _appliedDependentCredits = credit;
-            fedTax -= credit;
+            fedTax -= totalApplied;
           }
         }
       }
@@ -167,7 +181,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         _fedTaxPart = fedTax;
         _ficaTaxPart = ficaTax;
         _estimatedTotalTax = fedTax + ficaTax;
-        _netIncome = ((_entityType == 'Individual' ? gross : businessProfit)) - _estimatedTotalTax;
+        _netIncome = (_entityType == 'Individual' ? gross : businessProfit) - _estimatedTotalTax;
         _effectiveRate = (_entityType == 'Individual' ? gross : businessProfit) > 0 
             ? (_estimatedTotalTax / (_entityType == 'Individual' ? gross : businessProfit)) * 100 : 0;
         _currentYearText = config['config_year'] ?? "2026";
@@ -182,13 +196,14 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         clientName: 'Strategic Business Client',
         filingStatus: '$_entityType - $_filingStatus',
         grossIncome: double.tryParse(_incomeController.text) ?? 0,
-        expenses: double.tryParse(_expensesController.text) ?? 0,
+        expenses: _entityType == 'Individual' ? 0 : (double.tryParse(_expensesController.text) ?? 0),
         deduction: _appliedDeduction,
         estimatedTax: _estimatedTotalTax,
         netIncome: _netIncome,
         effectiveRate: _effectiveRate,
         year: _currentYearText,
-        childTaxCredit: _appliedDependentCredits,
+        childTaxCredit: _appliedChildCredit,
+        otherDependentCredit: _appliedOtherDependentCredit,
       );
     } catch (e) {
       if (mounted) {
@@ -211,6 +226,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   @override
   Widget build(BuildContext context) {
     const Color notreDameNavy = Color(0xFF0C2340);
+    const Color notreDameGold = Color(0xFFC99700);
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return StreamBuilder<DocumentSnapshot>(
@@ -220,6 +236,8 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         if (snapshot.hasData && snapshot.data!.exists) {
           config = snapshot.data!.data() as Map<String, dynamic>;
         }
+
+        final String yearText = config['config_year'] ?? _currentYearText;
 
         return Scaffold(
           appBar: AppBar(title: const Text('Strategic Tax Estimator')),
@@ -239,6 +257,11 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                       color: isDark ? Colors.white : notreDameNavy
                     )
                   ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Precision math based on $yearText IRS thresholds for Federal and SE tax.',
+                    style: const TextStyle(fontSize: 15, color: Colors.grey),
+                  ),
                   const SizedBox(height: 32),
                   
                   _buildInputCard(
@@ -247,7 +270,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                     children: [
                       DropdownButtonFormField<String>(
                         value: _entityType,
-                        decoration: const InputDecoration(labelText: 'Business Entity Type'),
+                        decoration: const InputDecoration(labelText: 'Taxpayer Entity Type'),
                         items: ['Individual', 'Sole Proprietor / 1099', 'S-Corp', 'C-Corp']
                             .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                             .toList(),
@@ -267,7 +290,11 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
                     context,
                     title: 'Financials & Adjustments',
                     children: [
-                      _buildTextField(controller: _incomeController, label: 'Annual Gross Income', icon: Icons.attach_money),
+                      _buildTextField(
+                        controller: _incomeController, 
+                        label: _entityType == 'Individual' ? 'Annual W-2 / Gross Income' : 'Annual Gross Income', 
+                        icon: Icons.attach_money
+                      ),
                       const SizedBox(height: 16),
                       _buildTextField(
                         controller: _expensesController, 
@@ -333,7 +360,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
 
                   if (_estimatedTotalTax > 0) ...[
                     const SizedBox(height: 40),
-                    _buildResultsSection(context, config['config_year'] ?? "2026"),
+                    _buildResultsSection(context, yearText),
                     const SizedBox(height: 24),
                     OutlinedButton.icon(
                       onPressed: _generatePdf,
@@ -362,10 +389,10 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 0,
-      color: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFF0C2340).withValues(alpha: 0.03),
+      color: isDark ? Colors.white.withOpacity(0.05) : const Color(0xFF0C2340).withOpacity(0.03),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16), 
-        side: BorderSide(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.1))
+        side: BorderSide(color: (isDark ? Colors.white : Colors.black).withOpacity(0.1))
       ),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -379,6 +406,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
   }
 
   Widget _buildTextField({required TextEditingController controller, required String label, required IconData icon, bool enabled = true}) {
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return TextFormField(
       controller: controller,
       enabled: enabled,
@@ -387,7 +415,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         labelText: label, 
         prefixIcon: Icon(icon, size: 20), 
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        fillColor: enabled ? null : Colors.grey.withValues(alpha: 0.1),
+        fillColor: enabled ? null : (isDark ? Colors.white10 : Colors.grey.withOpacity(0.1)),
         filled: !enabled,
       ),
       validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
@@ -401,7 +429,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF0C2340), 
         borderRadius: BorderRadius.circular(24), 
-        boxShadow: [BoxShadow(color: notreDameGold.withValues(alpha: 0.2), blurRadius: 20, spreadRadius: 2)]
+        boxShadow: [BoxShadow(color: notreDameGold.withOpacity(0.2), blurRadius: 20, spreadRadius: 2)]
       ),
       child: Column(children: [
         Text('Estimated Total Liability ($year)', style: GoogleFonts.montserrat(color: Colors.white70, fontSize: 13, letterSpacing: 1.2)),
@@ -412,7 +440,8 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
         
         _buildStatRow('Fed Income Tax (Net)', '\$${_fedTaxPart.toStringAsFixed(0)}'),
         _buildStatRow('FICA / SE Tax', '\$${_ficaTaxPart.toStringAsFixed(0)}'),
-        if (_appliedDependentCredits > 0) _buildStatRow('Dependent Credits', '-\$${_appliedDependentCredits.toStringAsFixed(0)}', color: Colors.greenAccent),
+        if (_appliedChildCredit > 0) _buildStatRow('Child Tax Credit', '-\$${_appliedChildCredit.toStringAsFixed(0)}', color: Colors.greenAccent),
+        if (_appliedOtherDependentCredit > 0) _buildStatRow('Other Dependent Credit', '-\$${_appliedOtherDependentCredit.toStringAsFixed(0)}', color: Colors.greenAccent),
         
         const Divider(color: Colors.white24, height: 40),
         
@@ -425,7 +454,7 @@ class _TaxEstimatorScreenState extends State<TaxEstimatorScreen> {
           const SizedBox(height: 24),
           Container(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
+            decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
             child: Text('S-Corp SE Tax Savings: \$${_seTaxSavings.toStringAsFixed(0)}', style: const TextStyle(color: Colors.greenAccent, fontWeight: FontWeight.bold, fontSize: 14)),
           ),
         ],
