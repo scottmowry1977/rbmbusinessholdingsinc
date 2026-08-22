@@ -1,3 +1,4 @@
+# Finalized build configuration
 workflows:
   ios-testflight:
     name: RBM Holdings iOS TestFlight
@@ -21,22 +22,19 @@ workflows:
           # 1. Initialize the Mac keychain
           keychain initialize
           
-          # 2. Clear out any cached/conflicting profiles on the build machine
-          rm -f ~/Library/MobileDevice/Provisioning\ Profiles/*
-          
-          # 3. Fetch and create the signing files from Apple
-          # We use --type IOS_APP_STORE as it is the standard for TestFlight
+          # 2. Fetch and create the signing files from Apple
+          # We use --type IOS_APP_STORE for TestFlight/App Store
           app-store-connect fetch-signing-files "$BUNDLE_ID" --type IOS_APP_STORE --create
           
-          # 4. Add the certificates to the keychain
+          # 3. Add the certificates to the keychain
           keychain add-certificates
           
-          # 5. Configure the project to use the new profiles
+          # 4. Configure the project to use the new profiles
           xcode-project use-profiles
           
-          # 6. Build the app
+          # 5. Build the app
+          # Running everything in one block ensures $CM_EXPORT_OPTIONS_PATH is available
           flutter pub get
-          # The key is to use the generated export options in the SAME script block
           flutter build ipa --release --export-options-plist=$CM_EXPORT_OPTIONS_PATH --build-number=$BUILD_NUMBER
     artifacts:
       - build/ios/ipa/*.ipa
