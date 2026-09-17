@@ -67,6 +67,20 @@ class ContactScreen extends StatelessWidget {
               Icons.location_on,
               () => _launchURL('https://www.google.com/maps/search/?api=1&query=957+NASA+Pkwy+%231184+Houston+TX+77058'),
             ),
+            _buildContactTile(
+              context,
+              'Support Ticket',
+              'Coming Soon in Version 3.0',
+              Icons.confirmation_number_outlined,
+              () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Support Ticket system is coming in Version 3.0. Please email us for immediate support.'),
+                    backgroundColor: Color(0xFF0C2340),
+                  ),
+                );
+              },
+            ),
             const SizedBox(height: 30),
             const Text(
               'Connect With Us',

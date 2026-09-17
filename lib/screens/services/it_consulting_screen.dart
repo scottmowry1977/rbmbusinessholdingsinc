@@ -80,6 +80,27 @@ class ITConsultingScreen extends StatelessWidget {
                     'We are partners with multiple top-tier equipment vendors. We manage all hardware and software purchases through our professional vendor system.',
                     Icons.shopping_cart,
                   ),
+                  const SizedBox(height: 32),
+                  Center(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Support Ticket system is coming in Version 3.0. Please use the Contact page for immediate assistance.'),
+                            backgroundColor: Color(0xFF0C2340),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.confirmation_number_outlined),
+                      label: const Text('Submit Support Ticket (Coming Soon)'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 56),
+                        side: const BorderSide(color: Color(0xFFC99700)),
+                        foregroundColor: isDark ? Colors.white : const Color(0xFF0C2340),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
