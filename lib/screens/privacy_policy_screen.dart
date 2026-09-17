@@ -34,52 +34,88 @@ class PrivacyPolicyScreen extends StatelessWidget {
             const SizedBox(height: 24),
             _buildSection(
               context,
-              'Information We Collect',
-              'When you use this app, we may collect information you provide directly, such as your name, '
-                  'email address, and company name, when you request a consultation, submit a support request, '
-                  'or sign in as an authorized team member. Our tax estimator tool performs calculations on your '
-                  'device and does not transmit the figures you enter to our servers.',
+              'Overview',
+              'RBM Business Holdings Inc. ("RBM," "we," "us," or "our") respects your privacy. This Privacy Policy '
+                  'explains what information the RBM Holdings app collects, how we use it, and the choices you have. '
+                  'By using this app, you agree to the practices described below.',
+            ),
+            _buildSection(
+              context,
+              'Information You Provide to Us',
+              'Consultation Requests: When you submit the "Request a Consultation" form, the app opens your '
+                  'device\'s email app with your name, company name, service interest, and message pre-filled. That '
+                  'message is sent directly from your email account to info@rbmbusinessholdingsinc.com — it '
+                  'passes through your own email provider, not through our servers, and we only receive it if you '
+                  'choose to send it.\n\n'
+                  'Authorized Team Member Sign-In: The app includes a login for RBM personnel to manage published '
+                  'content. If you sign in, we process your email address and password through Google Firebase '
+                  'Authentication to verify your identity. This sign-in is not available for public account '
+                  'creation.\n\n'
+                  'Contacting Us: If you email, call, or message us through the links in the app (including social '
+                  'media), we receive whatever information you choose to share in that conversation, subject to '
+                  'that platform\'s own privacy practices.',
+            ),
+            _buildSection(
+              context,
+              'Information We Do Not Collect',
+              'The Strategic Tax Estimator performs all calculations locally on your device. The figures you enter '
+                  '(income, expenses, dependents, etc.) are never transmitted to us or stored on our servers. This '
+                  'app does not access your camera, photos, contacts, precise location, or microphone, and it does '
+                  'not contain advertising or third-party tracking or analytics SDKs.',
             ),
             _buildSection(
               context,
               'How We Use Information',
-              'We use the information you provide to respond to consultation and support requests, to manage '
-                  'authorized team member access, and to operate and improve this app.',
+              'We use the information described above to respond to consultation requests, verify authorized team '
+                  'member access, publish and display company insights and articles, and operate, secure, and '
+                  'improve the app. We do not sell your personal information.',
             ),
             _buildSection(
               context,
               'Third-Party Services',
-              'This app uses Google Firebase (Authentication and Cloud Firestore) to operate securely. Requests '
-                  'submitted through consultation forms are sent via your device\'s email client and are not stored '
-                  'on our servers.',
+              'This app relies on the following service providers, each of which processes data under its own '
+                  'privacy policy:\n\n'
+                  '• Google Firebase (Authentication & Cloud Firestore) — secures sign-in and stores '
+                  'published articles and app configuration.\n'
+                  '• Google Fonts — may load font files from Google\'s servers to display text styles in '
+                  'the app.\n\n'
+                  'Links to our website, email, phone, and social media (LinkedIn, X, Instagram, Threads) open '
+                  'outside this app and are governed by those services\' own privacy policies.',
             ),
             _buildSection(
               context,
               'Data Retention & Security',
-              'We retain information only as long as necessary to fulfill the purposes described above, and we use '
-                  'industry-standard safeguards to protect it.',
+              'We retain the information described above only as long as necessary for the purposes stated in this '
+                  'policy, or as required by law. We use industry-standard administrative and technical safeguards, '
+                  'including Firebase\'s security infrastructure, to protect the information we hold.',
             ),
             _buildSection(
               context,
-              'Your Rights',
-              'You may request access to, correction of, or deletion of your personal information by contacting us '
-                  'at info@rbmbusinessholdingsinc.com.',
+              'Children\'s Privacy',
+              'This app is intended for business use and is not directed at children under 13. We do not knowingly '
+                  'collect personal information from children.',
+            ),
+            _buildSection(
+              context,
+              'Your Choices',
+              'You may request access to, correction of, or deletion of personal information we hold about you by '
+                  'contacting us at info@rbmbusinessholdingsinc.com. Authorized team members may request removal of '
+                  'their sign-in credentials at any time through the same contact.',
+            ),
+            _buildSection(
+              context,
+              'Changes to This Policy',
+              'We may update this Privacy Policy from time to time. Changes will be reflected by an updated "Last '
+                  'updated" date at the top of this page and, where required, we will provide additional notice.',
             ),
             _buildSection(
               context,
               'Contact Us',
-              'If you have questions about this Privacy Policy, contact us at info@rbmbusinessholdingsinc.com or '
-                  '281-245-0187.',
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'This is a placeholder policy pending legal review. Replace this content with your finalized privacy '
-              'policy before submitting to the App Store or Google Play.',
-              style: TextStyle(
-                fontSize: 12,
-                fontStyle: FontStyle.italic,
-                color: isDark ? Colors.white38 : Colors.grey,
-              ),
+              'If you have questions about this Privacy Policy or how we handle your information, contact us at:\n\n'
+                  'RBM Business Holdings Inc.\n'
+                  '957 NASA Pkwy #1184, Houston, TX 77058\n'
+                  'info@rbmbusinessholdingsinc.com\n'
+                  '281-245-0187',
             ),
           ],
         ),
