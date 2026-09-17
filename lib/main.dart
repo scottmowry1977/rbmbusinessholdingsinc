@@ -7,6 +7,7 @@ import 'screens/services/it_consulting_screen.dart';
 import 'screens/services/business_consulting_screen.dart';
 import 'screens/about_screen.dart';
 import 'screens/contact_screen.dart';
+import 'screens/privacy_policy_screen.dart';
 import 'screens/blog_screen.dart';
 import 'screens/consultation_form_screen.dart';
 import 'screens/splash_screen.dart';
@@ -14,7 +15,6 @@ import 'screens/onboarding_screen.dart';
 import 'screens/admin/article_uploader_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/tools/tax_estimator_screen.dart';
-import 'screens/tools/it_ticket_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -152,13 +152,13 @@ class RBMBusinessApp extends StatelessWidget {
         '/business': (context) => const BusinessConsultingScreen(),
         '/about': (context) => const AboutScreen(),
         '/contact': (context) => const ContactScreen(),
+        '/privacy': (context) => const PrivacyPolicyScreen(),
         '/blog': (context) => const BlogScreen(),
         '/consultation': (context) => const ConsultationFormScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/admin/uploader': (context) => const ArticleUploaderScreen(),
         '/login': (context) => const LoginScreen(),
         '/tax-estimator': (context) => const TaxEstimatorScreen(),
-        '/it-ticket': (context) => const ITTicketScreen(),
       },
     );
   }

@@ -85,12 +85,6 @@ class AppDrawer extends StatelessWidget {
                 _buildSectionHeader('Interactive Tools'),
                 _buildDrawerItem(
                   context,
-                  icon: Icons.support_agent_outlined,
-                  title: 'Submit IT Ticket',
-                  route: '/it-ticket',
-                ),
-                _buildDrawerItem(
-                  context,
                   icon: Icons.calculate_outlined,
                   title: 'Strategic Tax Estimator',
                   route: '/tax-estimator',
@@ -122,6 +116,12 @@ class AppDrawer extends StatelessWidget {
                   icon: Icons.contact_support_outlined,
                   title: 'Contact Us',
                   route: '/contact',
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.privacy_tip_outlined,
+                  title: 'Privacy Policy',
+                  route: '/privacy',
                 ),
               ],
             ),

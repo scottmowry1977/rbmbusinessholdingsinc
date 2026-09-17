@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/auth_service.dart';
 import '../../services/database_service.dart';
 
 class ArticleUploaderScreen extends StatefulWidget {
@@ -16,7 +17,24 @@ class _ArticleUploaderScreenState extends State<ArticleUploaderScreen> {
   final _contentController = TextEditingController();
   bool _isPublishing = false;
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _guardAccess());
+  }
+
+  void _guardAccess() {
+    if (!AuthService().isAdmin) {
+      Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Admin login required to access this page.')),
+      );
+    }
+  }
+
   Future<void> _publishArticle() async {
+    if (!AuthService().isAdmin) return;
+
     if (_formKey.currentState!.validate()) {
       setState(() => _isPublishing = true);
       
@@ -71,6 +89,9 @@ class _ArticleUploaderScreenState extends State<ArticleUploaderScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (!AuthService().isAdmin) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return Scaffold(
       appBar: AppBar(title: const Text('Article Uploader (Admin)')),
       body: SingleChildScrollView(
