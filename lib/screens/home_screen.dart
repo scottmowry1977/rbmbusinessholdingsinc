@@ -32,37 +32,51 @@ class HomeScreen extends StatelessWidget {
                         context,
                         'Financial Services',
                         Icons.account_balance,
+                        () => Navigator.pushNamed(context, '/financial'),
                       ),
                       _buildServiceCard(
                         context,
                         'IT Consulting',
                         Icons.computer,
+                        () => Navigator.pushNamed(context, '/it'),
                       ),
                       _buildServiceCard(
                         context,
                         'Business Strategy',
                         Icons.trending_up,
+                        () => Navigator.pushNamed(context, '/business'),
                       ),
                       _buildServiceCard(
                         context,
                         'Insights & News',
                         Icons.article,
+                        () => Navigator.pushNamed(context, '/blog'),
                       ),
                     ],
                   ),
                   const SizedBox(height: 24),
                   _buildLargeInfoCard(
                     context,
+                    'SaaS Platforms & Software',
+                    'Cloud solutions for operations, support & planning.',
+                    Icons.apps,
+                    () => Navigator.pushNamed(context, '/products'),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildLargeInfoCard(
+                    context,
                     'Client Portal & Onboarding',
                     'Roadmap for new partners and system intake.',
                     Icons.rocket_launch,
+                    () => Navigator.pushNamed(context, '/onboarding'),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   _buildLargeInfoCard(
                     context,
                     'About RBM Holdings',
                     'Learn more about our mission and leadership.',
                     Icons.info_outline,
+                    () => Navigator.pushNamed(context, '/about'),
                   ),
                 ],
               ),
@@ -175,36 +189,40 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildServiceCard(
-      BuildContext context, String title, IconData icon) {
+      BuildContext context, String title, IconData icon, [VoidCallback? onTap]) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 2,
       shadowColor: Colors.black12,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary.withValues(alpha: isDark ? 0.8 : 0.5)),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 14,
-                color: isDark ? Colors.white70 : Colors.grey[600],
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 44, color: Theme.of(context).colorScheme.secondary.withValues(alpha: isDark ? 0.8 : 0.5)),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: isDark ? Colors.white70 : Colors.grey[600],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildLargeInfoCard(
-      BuildContext context, String title, String subtitle, IconData icon) {
+      BuildContext context, String title, String subtitle, IconData icon, [VoidCallback? onTap]) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return Card(
       elevation: 1,
@@ -215,6 +233,8 @@ class HomeScreen extends StatelessWidget {
         side: BorderSide(color: Colors.grey.withValues(alpha: 0.1)),
       ),
       child: ListTile(
+        onTap: onTap,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         leading: Icon(icon, color: Theme.of(context).colorScheme.secondary.withValues(alpha: isDark ? 0.8 : 0.5), size: 32),
         title: Text(

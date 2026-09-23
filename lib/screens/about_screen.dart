@@ -7,13 +7,6 @@ import '../widgets/app_drawer.dart';
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  Future<void> _launchURL(String urlString) async {
-    final Uri url = Uri.parse(urlString);
-    if (!await launchUrl(url)) {
-      throw Exception('Could not launch $url');
-    }
-  }
-
   Future<void> _launchSocial(String urlString) async {
     final Uri url = Uri.parse(urlString);
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
@@ -45,9 +38,6 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const Color notreDameNavy = Color(0xFF0C2340);
-    const Color notreDameGold = Color(0xFFC99700);
-
     return Scaffold(
       appBar: AppBar(title: const Text('About Us')),
       drawer: const AppDrawer(),

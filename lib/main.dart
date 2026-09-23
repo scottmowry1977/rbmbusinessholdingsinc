@@ -15,6 +15,7 @@ import 'screens/onboarding_screen.dart';
 import 'screens/admin/article_uploader_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/tools/tax_estimator_screen.dart';
+import 'screens/products_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -150,6 +151,7 @@ class RBMBusinessApp extends StatelessWidget {
         '/financial': (context) => const FinancialServicesScreen(),
         '/it': (context) => const ITConsultingScreen(),
         '/business': (context) => const BusinessConsultingScreen(),
+        '/products': (context) => const ProductsScreen(),
         '/about': (context) => const AboutScreen(),
         '/contact': (context) => const ContactScreen(),
         '/privacy': (context) => const PrivacyPolicyScreen(),

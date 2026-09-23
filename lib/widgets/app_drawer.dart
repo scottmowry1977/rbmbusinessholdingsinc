@@ -81,6 +81,12 @@ class AppDrawer extends StatelessWidget {
                   title: 'Business Strategy',
                   route: '/business',
                 ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.apps_outlined,
+                  title: 'SaaS Platforms & Software',
+                  route: '/products',
+                ),
                 const Divider(),
                 _buildSectionHeader('Interactive Tools'),
                 _buildDrawerItem(
